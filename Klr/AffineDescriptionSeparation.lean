@@ -11,8 +11,9 @@ and sufficiently short binary programs describing events that cover their
 solutions. Uniform enumerability and the Martin-Löf measure bounds are
 discharged by the implemented interpreter and verifier.
 
-These are conditional separation theorems. They do not construct the stage
-sequence or prove the short-program bounds required by the paper.
+These are conditional separation theorems. The separate `StageConstruction`
+development supplies their actual stage sequence and short-program bounds;
+`Separation` obtains the resulting unconditional existence theorem.
 -/
 
 @[expose] public section

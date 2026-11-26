@@ -1,10 +1,17 @@
 # Concrete affine descriptions and the Martin-Löf test
 
-The description-budget argument now has a concrete interpreter, finite
-verifiers, and an actual Martin-Löf test. The final separation theorem still
-requires the paper's stage construction and short descriptions of the
-particular block events that construction selects. Those requirements are
-explicit hypotheses, rather than assumptions about an unspecified decoder.
+The description-budget argument has a concrete interpreter, finite
+verifiers, and an actual Martin-Löf test. The completed stage construction
+now supplies short descriptions of its selected block events: the program
+reconstructs the pool and candidate, searches for the horizon, computes the
+syndrome, and produces a verified exact affine code.
+
+[`Separation.lean`](../Klr/Separation.lean) proves the unconditional separation
+theorem for the repository's **total computable-real betting-strategy
+convention**. No construction or description premise remains in that
+theorem. A general partial computable-real strategy convention requires a
+separate bridge. The [stage-construction note](stage-construction.md) explains
+the complete assembly; this note documents its effective descriptions.
 
 ## Finite affine codes and exact event coverage
 
@@ -58,8 +65,11 @@ halts exactly when the input matrix has full row rank. Every output passes
 
 Thus a description program can compute and output the certificate. The
 certificate's literal size need not be included in the program's binary
-length. This is an effectiveness statement; it does not itself construct the
-program for the paper's chosen stage.
+length. The completed stage uses `StageCodeSearch` and `StageCandidateCode`
+to recover a verified code by exact finite truth-table comparison with the
+selected candidate event. This also computes a valid certificate and proves
+exact event and rank equality, without encoding a noncomputably chosen
+matrix representation as advice.
 
 ## The plain binary interpreter and the test
 
@@ -138,9 +148,22 @@ eventual threshold. It does not require an optimality theorem for Mathlib's
 syntactic program encoding.
 
 The algorithm and polynomial exponent are fixed before taking the eventual
-rank bound. These results therefore become useful once a single reconstruction
-algorithm, with the required bound on its numerical input or advice, has
-been supplied.
+rank bound. The stage construction respects this order: one fixed program
+works for all trial ranks and admissible advice values at the current stage.
+
+[`StageProgramLength.lean`](../Klr/StageProgramLength.lean) specializes the
+encoding estimates to the actual nested input
+
+$$
+\operatorname{pair}\bigl(r,\operatorname{pair}(q,b)\bigr),
+\qquad q<r^{24},\quad b\le B,
+$$
+
+where $B$ is fixed before varying $r$. Its
+`eventually_programFor_stage_budget` proves the required length/rank budget
+uniformly over these $q,b$. `StagePrepared` intersects this eventual bound
+with the eventual existence of good pools and candidates, after the program
+header is already fixed.
 
 ## The effective sparse-list construction
 
@@ -166,7 +189,7 @@ $M=r^8$, $m=r^2$, and $J=M^3$ are in
 positive rational density and error tolerance, the actual list-producing
 partial-recursive computation eventually halts and returns a good list.
 
-## The remaining separation obligation
+## The modular description obligation and its discharge
 
 [AffineDescriptionSeparation.lean](../Klr/AffineDescriptionSeparation.lean)
 proves `exists_separating_of_stage_estimates_and_affine_programs`. It assumes
@@ -179,16 +202,46 @@ $$
 \exists X\;[\operatorname{KLR}(X)\land\neg\operatorname{MLR}(X)].
 $$
 
-The exact-event variant replaces containment by equality. Uniform
-enumerability, interpreter correctness, and description measure budgets are
-already discharged by the concrete development.
+The exact-event variant replaces containment by equality. This conditional
+theorem remains a useful modular reduction. `StageConstruction.exists_sequence`
+now supplies its estimates and exact description witnesses together.
 
-What remains is the simultaneous stage construction: selecting blocks with
-the stated estimates and reconstructing the selected affine system,
-including its coordinates and syndrome, from a fixed algorithm and
-sufficiently short input. The polynomial-advice theorem does not show that
-the paper's actual choices have polynomially bounded advice. In particular,
-the existence of an arbitrary $r$-bit syndrome does not supply its short
-description; the construction must compute the chosen syndrome or otherwise
-justify its description cost. The repository does not yet prove the
-unconditional separation theorem.
+The actual program is assembled in
+[`StageReconstruction.lean`](../Klr/StageReconstruction.lean). The fixed header
+contains the earlier affine codes, the finite protected strategy list, the
+pool program, and rational parameters. Only $(r,q,b)$ varies. Evaluation
+performs the following operations:
+
+1. Run the fixed pool program at $M=r^8$.
+2. Run the sparse-list constructor and retrieve candidate $q$.
+3. Compute exact rational finite-horizon rank probabilities and search using
+   the bounded integer advice $b$.
+4. Minimize the finite rational objective over all $2^r$ syndromes.
+5. Reconstruct a certified affine code for the selected event.
+
+The horizon advice bounds the eventual total drop probability to within one
+error interval. Its bound depends on the stage tolerance and protected scan
+count, not on $r$. It supplies neither a convergence modulus nor a literal
+syndrome. `StageFiniteScan` and `StageConditionalScan` compute the objective
+under the actual affine conditions on raw input bits, using an all-branch
+finite query bound. The adaptive answers are simulated inside this finite
+calculation.
+
+`StageSyndromeObjective.chosen_minimizes_integral` proves that the computed
+word minimizes the actual conditional integral. The old-law average over
+all syndromes gives the desired early-wager and partial-rank bound for the
+minimizer. The first-drop tail estimate holds for every syndrome, so it is
+preserved by this choice. This supplies the description argument that
+existence of an arbitrary $r$-bit syndrome alone would not provide.
+
+`StageOneStep` proves successful evaluation of this same program and its
+shortness for the actual chosen block. `StageRecursion` obtains an exact
+short program at every test level, and `Separation` concludes
+
+```lean
+Klr.exists_kolmogorovLovelandRandom_not_martinLofRandom
+Klr.martinLofRandom_ssubset_kolmogorovLovelandRandom
+```
+
+with no stage or description hypothesis, for the total computable-real
+strategy predicate specified above.

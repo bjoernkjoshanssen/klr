@@ -1,27 +1,40 @@
-# The remaining construction and the checked final reduction
+# Stage estimates and the completed separation argument
 
-The probability argument after the stage construction is now connected in Lean.
-The remaining work is to **construct one sequence of blocks and descriptions**
-meeting its hypotheses. This note states that boundary precisely.
+The stage construction now supplies an actual sequence of disjoint affine
+blocks, common protected-scan horizons, and short exact descriptions.
+[`StageConstruction.exists_sequence`](../Klr/StageConstruction.lean) proves
+these properties together. The resulting unconditional theorem is
 
-The main conditional theorem is
+```lean
+Klr.exists_kolmogorovLovelandRandom_not_martinLofRandom
+```
+
+in [`Separation.lean`](../Klr/Separation.lean). Here
+`KolmogorovLovelandRandom` uses the repository's explicit **total
+computable-real betting-strategy convention**. The theorem has no remaining
+stage-construction or description hypothesis. A bridge to a general partial
+computable-real strategy convention is a separate question.
+
+This note explains the probabilistic interface and final reduction. The
+[stage-construction note](stage-construction.md) explains how its hypotheses
+are now discharged. The modular conditional theorem remains useful:
 
 ```lean
 Klr.exists_separating_of_stage_estimates_and_affine_programs
 ```
 
-Its conclusion is the intended
+Its conclusion is
 
 ```lean
 ∃ X : Klr.Cantor,
   Klr.KolmogorovLovelandRandom X ∧ ¬ Klr.MartinLofRandom X
 ```
 
-but it has substantive construction hypotheses. There is no unconditional
-separation theorem yet. The effective sparse-list construction, fixed-partition
-computable pool lemma, and concrete description test are proved. The stage
-selection and its reconstruction programs still have to be constructed.
-None of these results is assumed as an axiom.
+Its construction hypotheses expose the exact mathematical requirements of
+the probabilistic argument. The completed stage theorem proves those
+requirements using the effective sparse list, fixed-partition pool program,
+finite conditional computations, and bounded horizon advice. None is
+assumed as an axiom.
 
 ## Indexing and the stage contract
 
@@ -34,25 +47,27 @@ $$
 e_j=2^{-j}/100.
 $$
 
-For each original strategy `s`, use its proved normalization. Write `π` for
-its scan and `h` for its signed wager function. The construction must supply
-one Borel transcript set `H`, its complement `L`, and a finite exceptional
-cutoff `J`, such that the following properties hold for every `j≥J`.
-The block horizons `V_j` are common to the construction.
+For each original strategy `s`, use its proved normalization. Write $\pi$ for
+its scan and $h$ for its signed wager function. The construction supplies one
+Borel transcript set $H$, its complement $L$, and a finite exceptional cutoff
+$J$, such that the following properties hold for every $j\ge J$.
+The block horizons $V_j$ are common to the construction.
 
 | Field of `StageEstimates` | Required property |
 | --- | --- |
-| `measurableH` | `H` is a measurable set in transcript space |
-| `horizon_avoidance` | On every transcript of length `V_j`, all blocks `k>j` still have full unread rank |
-| `early_and_partial` | `E_{P_{j+1}} W_j(V_j) + P_{j+1}(0<R_j(V_j)<r_j) ≤ 4e_j` |
-| `first_drop_tail` | `P_{j+1}(V_j<T_j<∞) ≤ 2e_j` |
-| `high_no_drop` | `P_j(H ∩ {T_j=∞}) ≤ e_j` |
-| `later_low_drop` | For every `k>j`, `P_{j+1}(L ∩ {T_k<∞}) ≤ e_k` |
+| `measurableH` | $H$ is a measurable set in transcript space |
+| `horizon_avoidance` | On every transcript of length $V_j$, all blocks $k>j$ still have full unread rank |
+| `early_and_partial` | $\mathbb E_{P_{j+1}} W_j(V_j) + P_{j+1}(0<R_j(V_j)<r_j) \le 4e_j$ |
+| `first_drop_tail` | $P_{j+1}(V_j<T_j<\infty) \le 2e_j$ |
+| `high_no_drop` | $P_j(H \cap \{T_j=\infty\}) \le e_j$ |
+| `later_low_drop` | For every $k>j$, $P_{j+1}(L \cap \{T_k<\infty\}) \le e_k$ |
 
-Here `W_j(V_j)` is the actual sum of absolute wagers at rank drops in block
-`j` through the first `V_j` queries. `R_j` is numerical remaining rank, and
-`T_j` is the first strict rank decrease. A transcript-space set in a measure
-formula means its preimage under the scan's measurable observation map.
+Here $W_j(V_j)$ is the actual sum of absolute wagers at rank drops in block
+$j$ through the first $V_j$ queries. $R_j$ is numerical remaining rank, and
+$T_j$ is the one-based index of the first query causing a strict rank
+decrease. Thus the early sum uses zero-based times $t<V_j$, while the
+first-drop tail uses $t\ge V_j$. A transcript-space set in a measure formula
+means its preimage under the scan's measurable observation map.
 
 These are the consequences of estimates (6)–(9) needed in Section 6. Weak
 inequalities are sufficient; the paper's strict estimates imply them.
@@ -69,8 +84,11 @@ The full hypothesis is
 ```
 
 There is no effective enumeration of total strategies in this statement.
-`StrategyCountability` independently proves countability of the actual
-computable-real strategy type, which is what the final null-set union needs.
+`StrategyCountability` proves countability of the actual computable-real
+strategy type. `StageEnumeration` uses it to obtain a classical surjective
+enumeration, and the construction protects indices $0,\ldots,n$ at stage
+$n$. Consequently strategy $i$ satisfies the displayed contract with $J=i$.
+Countability also justifies the final union of null success sets.
 
 ## What follows from those stage estimates
 
@@ -119,7 +137,7 @@ convergence argument. It proves the same required boundedness conclusion.
 The square-sum estimate remains necessary for the earlier candidate-support
 wager bound.
 
-## The concrete description test and the remaining programs
+## The concrete description test and reconstructed programs
 
 The original modular reduction took a predicate
 
@@ -148,7 +166,7 @@ input. The output is finite affine data, checked by a computable right-inverse
 verifier and a rank threshold. Accepted prefixes enumerate exactly the
 decoded affine event, whose measure is exactly `2^-r`.
 
-Consequently the new final theorem takes only the following concrete
+Consequently the modular final theorem takes the following concrete
 description obligation in addition to the stage estimates:
 
 ```lean
@@ -169,26 +187,48 @@ level. `SparseSearch` supplies an actual partial-recursive completion of a
 right-inverse certificate, halting precisely on full-row-rank systems and
 preserving their affine events.
 
-The remaining task is to write the stage reconstruction algorithm, prove it
-computes the chosen matrix and syndrome, and show its input/advice obey the
-proved length bounds. Writing the syndrome literally still costs `r` bits
-and does not meet the desired budget. The
-[affine-description note](affine-descriptions.md) records the concrete APIs.
+`StageReconstruction` now composes an actual reconstruction algorithm. Its
+fixed header contains the old affine codes, protected strategies, pool
+program, and rational parameters. Its variable input is the triple
+$(r,q,b)$: trial rank, position in the sparse list, and bounded integer horizon
+advice. The candidate index satisfies $q<r^{24}$, and the advice bound is
+fixed before varying $r$. `StageProgramLength` proves that this input has
+sufficiently small binary length at all sufficiently large ranks.
+
+The horizon is found by the actual rational search, and `StageSyndromeObjective`
+computes the syndrome by finite exact minimization. The syndrome is therefore
+not supplied as $r$ literal advice bits. `StageCandidateCode` reconstructs a
+verified affine code with exactly the selected block event and rank. The
+construction retains the selected mathematical block for its rank and
+support estimates; the code provides its short event description. The
+[affine-description note](affine-descriptions.md) records these APIs.
 
 Every input satisfying all block equations then fails the constructed test.
 Since the block intersection has `ρ`-measure one, it meets the set of KL-random
 inputs supplied by the probabilistic argument.
 
-## Remaining substantive work
+## How the construction discharges the interface
 
-The proof still needs the stage selection that supplies the estimates above
-together with the reconstruction programs. The
-[computable-pool note](computable-pools.md) records the proved Lemma 3,
-including its fixed Borel partitions, finite advice, actual program, and
-eventual halting.
-The [sparse-candidate note](sparse-candidates.md) records the now proved
-Lemma 4, including its actual finite verifier and eventual termination of
-exhaustive search. Its output, the pool program, the horizon and syndrome
-choices, and the compiler bounds must be made compatible in one construction.
-The checked reduction isolates their exact output requirements; it does not
-reduce their mathematical difficulty to a routine final invocation.
+`StagePreHorizon` combines the
+[computable-pool lemma](computable-pools.md) and
+[sparse-candidate lists](sparse-candidates.md) with actual normalized support
+wagers and finite-stage densities. A single candidate satisfies the wager
+and low-drop bounds simultaneously; the high pool-miss bound is retained
+under every earlier law. These estimates hold before a syndrome is chosen.
+
+`StagePrepared` fixes the reconstruction program before selecting a rank
+large enough for both the candidate estimates and description budget.
+`StageRankLimit`, `StageRankProbability`, and `StageOneStepHorizon` prove
+termination of the bounded-advice horizon search. `StageOneStep` attaches
+the computed syndrome, actual execution witness, and all four probability
+bounds to the new block.
+
+`StageConstruction` proves that an extension exists after every finite
+disjoint history. `StageRecursion` assembles these extensions into coherent
+finite histories and an infinite sequence. Its cutoffs cover old supports
+and all branches through old protected horizons, giving disjointness and
+the required horizon avoidance. It proves the actual `StageEstimates` and
+an exact short program at every test level. `Separation` then applies the
+modular reduction without a remaining construction premise. The
+[stage-construction note](stage-construction.md) gives the full dependency
+chain and the quantifier order that keeps the reconstruction header fixed.

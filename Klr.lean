@@ -44,3 +44,4 @@ public import Klr.SparseSearch
 public import Klr.SparseListConstruction
 public import Klr.SparseListWeights
 public import Klr.PoolConstruction
+public import Klr.Separation

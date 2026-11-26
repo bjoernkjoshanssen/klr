@@ -10,21 +10,24 @@ page numbers of that version.
 The initial informal review found **no mathematical error requiring correction**.
 In particular, the normalization, the use of non-effective finite advice, and
 the transfer from finite-stage measures to the final measure survive the
-checks described below. This conclusion is limited: the proof has not been
-formalized in full, and the simultaneous stage construction remains an open
-formalization task.
+checks described below. The subsequent Lean development now proves the
+separation theorem for the repository's explicit convention of total
+strategies with uniformly computable real capital.
 
-The repository contains proved foundations and intermediate lemmas, rather
-than a theorem whose missing arguments are hidden in hypotheses or axioms.
-The README and individual module headers record the scope of each component.
-There is currently no unconditional Lean theorem asserting existence of a
-KL-random sequence that is not ML random. The final probabilistic reduction is
-checked, with the construction's concrete finite-stage estimates and effective
-program-reconstruction obligations left explicit. Lemma 4, including an actual
-effective exhaustive search and eventual halting, is now proved. Lemma 3 is
-also proved, including fixed Borel partitions, finite advice, actual program
-extraction, eventual halting, and the two missed-position bounds. The affine
-description test and its compiler bounds are implemented.
+The assumption-free theorem is
+`Klr.exists_kolmogorovLovelandRandom_not_martinLofRandom` in
+[Separation.lean](../Klr/Separation.lean). The actual simultaneous stage
+construction supplies every finite-stage estimate and every successful short
+reconstruction program required by the modular final reduction. Lemmas 3 and
+4, fixed partitions, effective searches, bounded horizon advice, computed
+syndromes, and the coherent infinite sequence are all proved. No missing
+construction fact is introduced as an axiom.
+
+This scope remains explicit: the project proves a rational-wager partial
+totalization result and a total computable-real normalization, but not a
+general bridge from arbitrary partial computable-real source programs to the
+total-strategy convention. The final theorem does not assert that additional
+equivalence. The README and individual module headers record these boundaries.
 
 ## Definitions and their verification
 
@@ -355,8 +358,10 @@ the rank-preserving indices costs at most the factor `1/(1−θ)`. For each dens
 unread set, there is a rank-preserving candidate of support weight at most
 `(2m/M)/(1−θ) * sqrt(MC)`. See the
 [sparse-candidate note](sparse-candidates.md) for the precise proof chain and
-effective output representation. Applying these facts to the actual stage
-wagers remains part of the stage construction.
+effective output representation. `StageWeights` now applies them to the actual
+normalized wagers under any probability input law. `StageChoice` combines
+this wager score with the low-drop scores for every protected strategy and
+every earlier finite-stage law before selecting one candidate-list index.
 
 ### 5. Short descriptions and advice — Section 5, pages 9–12
 
@@ -381,7 +386,8 @@ rank `r`.
 Two non-effective choices have short encodings:
 
 - The chosen candidate index is smaller than `J=r^24`, so costs `O(log r)` bits.
-- The horizon advice integer `b_j` is bounded by `j/e_j`, independently of `r`.
+- In zero-based indexing, the horizon advice integer `b_j` is at most
+  `floor((j+1)/e_j)`, independently of `r`.
 
 The syndrome is computed by finite minimization once this data is supplied.
 Writing the syndrome literally would cost `r` bits and break the argument;
@@ -417,11 +423,25 @@ $$
 
 For a fixed program `e`, polynomially bounded numerical input and paired advice
 therefore satisfy `2|p|+level+1≤r` at every sufficiently large rank. These are
-actual length inequalities, not a big-O assumption. The remaining obligation
-is to supply the stage reconstruction algorithm and prove that its advice
-meets these bounds while its output gives the chosen syndrome and matrix.
-The [affine-description note](affine-descriptions.md) records the concrete
-representation and the final conditional theorem.
+actual length inequalities, not a big-O assumption. `StageProgramLength`
+proves the required budget for the concrete input `pair r (pair q b)` with
+`q < r^24` and rank-independent bounded `b`. `StageReconstruction` supplies a
+single fixed program before those inputs vary. It runs the pool and list
+searches, finds the horizon using exact rational probabilities, minimizes a
+finite rational syndrome objective, and reconstructs a verified affine code.
+`StagePrepared` then chooses a rank large enough for both the analytic
+estimates and that program's actual length budget.
+
+The syndrome objective uses the truncated total support wager, which dominates
+the early rank-drop wager and is itself bounded by the all-time support wager.
+This strengthens the finite minimization while preserving its `4e_j` budget.
+The horizon predicate interprets `b-1` in the rationals, so the zero-advice
+case has negative threshold and still halts. Neither point requires a
+mathematical correction to the paper's argument.
+
+The [stage-construction note](stage-construction.md) gives the complete
+program and quantifier order. The [affine-description note](affine-descriptions.md)
+records the underlying concrete interpreter and length representation.
 
 ### 6. The final measure — Section 6, pages 12–14
 
@@ -506,8 +526,9 @@ sequence if the common block solutions are covered by one genuine Martin-Löf
 test. A second interface derives that test from `DescriptionBudget`'s uniform
 c.e. description family and explicit per-description bounds.
 
-These are conditional reductions. They do not construct a block sequence
-satisfying the required wager estimates and short-description properties.
+These modules retain conditional reductions as reusable interfaces.
+`StageConstruction` now constructs the block sequence satisfying their wager
+estimates and exact short-description requirements.
 
 #### From the finite-stage estimates to equation (11)
 
@@ -539,28 +560,40 @@ almost-sure KL randomness under the actual constructed law, and
 `exists_separating_of_stage_estimates_and_descriptions` gives the separating
 sequence when the effective description contract is also supplied. The newer
 `exists_separating_of_stage_estimates_and_affine_programs` instantiates that
-contract with the implemented interpreter; its remaining description
+contract with the implemented interpreter; its description
 hypothesis concerns actual successful programs and their lengths.
 The [stage-estimates note](stage-estimates.md) states all hypotheses, including
-the zero-based stage convention. The remaining task is their simultaneous
-construction; the code does not posit those witnesses as axioms.
+the zero-based stage convention. The completed construction now supplies those
+witnesses simultaneously; the code does not posit them as axioms.
 
-## Suggested dependency order
+## Completion of the simultaneous construction
 
-1. Apply the fixed-partition computable pool theorem, effective sparse-list
-   construction, and support-weight estimates
-   to the actual finite-stage measures and normalized wagers.
-2. Encode the stage construction and its actual descriptions, including the
-   reconstruction of horizons and syndromes, proving the `StageEstimates`
-   and successful short-program contracts simultaneously.
-3. Apply the checked final reduction to those constructed witnesses and
-   audit the resulting unconditional theorem's axioms.
+`StageOneStep` starts with the prepared actual pool, executable candidate
+list, and a rank selected after its program has been fixed. It obtains bounded
+advice, an actual halting horizon search, the computed minimizing syndrome,
+and a verified affine output. The same result carries all four actual-law
+probability bounds and `2|p|+n+1 ≤ r`.
+
+`StageRecursionData` records padded finite histories and a cutoff containing
+all old supports and every earlier protected all-branch horizon bound.
+`StageRecursion` appends one block at a time and proves prefix coherence,
+pairwise disjointness, exact agreement of earlier laws, future horizon
+avoidance, and the actual `StageEstimates` from each strategy's index onward.
+For a later block `k` and a protected stage `j < k`, its low-drop estimate
+uses the earlier-law instance `a = j+1`; this is why all earlier laws were
+included in the stage score.
+
+`StageConstruction` closes the extension premise using fixed Borel partitions
+and `Prepared.to_step`. `StageEnumeration` supplies a classical surjective
+enumeration of the actual countable strategy type. `Separation` invokes the
+modular final reduction and proves both a separating sequence and proper
+inclusion of the Martin-Löf random class in the defined KL-random class.
 
 The effective normalization, infinite block law, no-drop and conditional
 answer identities, effective Lemmas 3 and 4, concrete affine-description test,
-quantitative Section 6 reduction, and `MLR → KLR` check now provide the
-required downstream interfaces. A full partial-real source-model bridge can be
-treated separately; the paper's construction uses total strategies.
+quantitative Section 6 reduction, and `MLR → KLR` are all part of that proof
+chain. A full partial-real source-model bridge remains separate; it is not
+assumed by the completed theorem for total strategies.
 
 ## Dependencies
 

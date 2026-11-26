@@ -5,7 +5,7 @@ public import Klr.HorizonLaw
 public import Klr.StageErrorBudget
 
 /-!
-# The remaining stage-construction contract and the separation reduction
+# The stage-construction contract and the separation reduction
 
 `StageEstimates` records the actual finite-stage estimates (6)--(9), together
 with horizon avoidance, for one scan and wager function beyond an arbitrary
@@ -15,8 +15,8 @@ that blocks with these properties exist.
 These estimates imply the actual infinite-law early and late bounds, then
 almost-sure summability of all forced wagers.  If they hold for every normalized
 strategy and the block solutions have the stated effective description cover,
-the final separating-sequence conclusion follows.  The pool lemma, candidate
-construction, and short descriptions must still supply this contract.
+the final separating-sequence conclusion follows. `StageConstruction` now
+supplies this contract using actual pools, candidates and short descriptions.
 -/
 
 @[expose] public section

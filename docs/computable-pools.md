@@ -7,9 +7,14 @@ finite advice, and proves eventual termination and correctness of an actual
 partial-recursive pool-producing program. Mathlib is the only external
 library dependency.
 
-This establishes Lemma 3. The simultaneous affine-block construction and its
-short reconstruction programs remain to be proved before the repository can
-conclude that KL randomness differs from Martin-Löf randomness.
+This establishes Lemma 3. The pool program is now used by the completed
+simultaneous affine-block construction and its short reconstruction programs.
+[`StageConstruction`](../Klr/StageConstruction.lean) proves the required block
+sequence, and [`Separation`](../Klr/Separation.lean) proves separation for the
+repository's **total computable-real betting-strategy convention**, without
+a construction premise. A general partial computable-real convention
+requires a separate bridge. See the
+[stage-construction note](stage-construction.md) for the complete assembly.
 
 ## The checked statement and its quantifiers
 
@@ -258,13 +263,38 @@ for nonempty pools and transports the strict inequalities to the paper's
 missed-count formulation. The one-way implications needed for soundness
 also handle the empty pool, whose strict missed-count event is empty.
 
-## Remaining construction work
+## Use in the completed stage construction
 
-The pool theorem and the effective sparse-list theorem now supply the two
-main finite combinatorial components. They must still be combined with the
-actual finite-stage measures and normalized wager weights to choose the
-affine blocks and horizons satisfying estimates (6)–(9). Their selected
-syndromes and horizons must also be reconstructed by the fixed programs
-needed for the short-description argument. Those obligations remain in
-[`StageEstimates`](../Klr/StageEstimates.lean) and the
-[affine-description note](affine-descriptions.md).
+[`StagePreHorizon`](../Klr/StagePreHorizon.lean) specializes this theorem to
+the normalized scans of the protected strategies. The Borel sets $H_i$ are
+chosen once for the entire countable family. At a particular stage, the
+error tolerance, density margin, and pool program are fixed before varying
+the trial rank $r$; the program is run at $M=r^8$.
+
+The pool inequalities are in prescribed answer space, whereas the stage
+law conditions the raw input sequence on the old affine equations.
+[`StageChoice`](../Klr/StageChoice.lean) proves the required transfer. A fresh
+scan preserves fair coin under its observation map. If the total rank of
+the old blocks is $K$, every earlier stage law is bounded by $2^K$ times
+fair coin. Thus the same answer-space pool inequalities give actual
+input-space probability bounds under every earlier law. The stage chooses
+the tolerance small enough to include this density factor and the number
+of protected scans.
+
+[`StageRankAverage`](../Klr/StageRankAverage.lean) combines the low-set pool
+estimate with the sparse list's restriction-rank guarantee. Together with
+the support-wager estimate, one finite average over the complete candidate
+list supplies a single candidate satisfying both bounds. The pool's
+high-set miss estimate supplies the remaining high/no-drop bound and
+controls the limiting partial-rank event used in horizon selection.
+
+The output pool is an actual successful evaluation of the same fixed
+program later called by `StageReconstruction`. The program searches for the
+horizon using bounded integer advice and computes the syndrome by exact
+finite minimization. `StageOneStep` proves its execution and all required
+stage estimates; `StageRecursion` builds the infinite sequence while
+preserving old supports and protected horizons. The
+[affine-description note](affine-descriptions.md) explains why the resulting
+descriptions meet the rank budget, and the
+[stage-estimates note](stage-estimates.md) records the probabilistic
+interface they satisfy.

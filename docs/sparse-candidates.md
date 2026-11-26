@@ -14,6 +14,16 @@ Klr.SparseListConstruction.partrec_construct
 Klr.SparseListConstruction.eventually_construct_good
 ```
 
+These lists are now used in the completed simultaneous stage construction.
+[`StageConstruction`](../Klr/StageConstruction.lean) combines them with the
+fixed pool programs, actual wager estimates, horizon search, and computed
+syndromes. [`Separation`](../Klr/Separation.lean) proves the unconditional
+separation theorem for the repository's **total computable-real
+betting-strategy convention**. A general partial computable-real convention
+requires a separate bridge; see the
+[stage-construction note](stage-construction.md) for the exact scope and
+assembly.
+
 For every fixed positive real density `τ` and error tolerance `θ`, it proves
 that every sufficiently large natural `r` admits a list of
 
@@ -179,16 +189,64 @@ $$
 \le\frac{2m/M}{1-\theta}\sqrt{MC}.
 $$
 
-The direct wrapper is
-`exists_rank_good_small_weight_of_isGood`. The weight function is arbitrary;
-applying it to a stage's actual wager expectations remains part of the
-stage construction.
+The direct wrapper is `exists_rank_good_small_weight_of_isGood`. This is a
+useful deterministic API for one prescribed dense set. The stage
+construction uses the complete-list average: its unread sets depend on the
+answer sequence, and one candidate must control both actual wager
+expectations and the integrated low-set rank-drop probability.
 
 `SparseListWeights` supplies the same bounds directly for a verified code
 list. Its `exists_rank_good_small_weight_of_construct` takes an actual
 successful output of `construct` and returns an entry of that list whose
 masked matrix keeps full rank and whose support has the displayed weight
 bound. No reverse decoding to the probabilistic candidate type is required.
+
+### Actual normalized wagers and simultaneous candidate selection
+
+[`StageWeights`](../Klr/StageWeights.lean) defines the all-time absolute wager
+at a position, then sums it over a finite support. Freshness ensures that a
+position contributes at most once on each input. The normalized pathwise
+square-sum bound and Cauchy–Schwarz give
+
+$$
+\sum_{a\in G} w_i(a,X)\le\sqrt{M/2}.
+$$
+
+Applying the list's incidence bound before integrating under the actual
+old-stage law $P_n$ gives, for each protected strategy,
+
+$$
+\frac1J\sum_{q<J}\mathbb E_{P_n}
+  \sum_{a\in S_q}w_i(a,X)
+\le\frac{2m}{M}\sqrt{M/2}
+=\frac{\sqrt2}{r^2}.
+$$
+
+This estimate holds for an arbitrary probability law. The supports in the
+formula are the actual natural-number positions obtained by embedding the
+candidate masks in the concrete pool list.
+
+[`StageRank`](../Klr/StageRank.lean) identifies the candidate's restricted
+matrix on a finite unread mask with the actual unread affine map. Passing
+to the eventual unread pool gives the all-time no-drop correspondence.
+[`StageRankAverage`](../Klr/StageRankAverage.lean) integrates the list's bad
+rank count. If the pool's low-set failure probability is at most $\eta$,
+the resulting average low-set drop probability is at most $\eta+\theta$.
+
+[`StageChoice`](../Klr/StageChoice.lean) selects one index from the sum of
+these two scores over all protected strategies. The rank score is multiplied
+by the old-law density bound $2^K$, where $K$ is the sum of preceding block
+ranks. For $\ell$ protected scans, the complete-list average is at most
+
+$$
+\ell\left(\frac{\sqrt2}{r^2}+2^K(\eta+\theta)\right).
+$$
+
+The tolerances are chosen before $r$, and the first term tends to zero.
+Consequently one actual list position simultaneously satisfies the
+support-wager and low-drop budgets. The conclusions hold for every later
+syndrome, since these scores depend only on the support and unread ranks.
+This is the candidate used by `StagePreHorizon` and `StagePrepared`.
 
 ## The effective exhaustive search
 
@@ -244,11 +302,20 @@ There is also a theorem extracting an actual partial-recursive program for
 this fixed-parameter construction. This proves the effective conclusion of
 Lemma 4 without an assumed computable witness selector.
 
-The returned candidate data does not yet select a stage syndrome. Its
-certificate field is also unrestricted, since the direct rank verifier does
-not need a certificate. `SparseSearchCertificate` can subsequently compute
-a right inverse for any such full-row-rank matrix, preserving a supplied
-syndrome and the corresponding affine event. The
-[computable pool lemma](computable-pools.md) is now also proved. Combining
-the two algorithms with the horizon, syndrome, and wager requirements
-remains part of the simultaneous stage construction.
+The sparse-list output itself leaves the stage syndrome to the later finite
+minimization. Its certificate field is also unrestricted, since the direct
+rank verifier does not need a certificate. `SparseSearchCertificate` can
+compute a right inverse for any such full-row-rank matrix, preserving a
+supplied syndrome and the corresponding affine event.
+
+In the completed stage, `StageSyndromeObjective` computes the minimizing
+syndrome from exact rational expectations. `StageCandidateCode` then
+reconstructs a verified code with the selected event and rank. The entire
+procedure is part of one actual `StageReconstruction` program, which
+reproduces the same [computable pool](computable-pools.md) and sparse list.
+Only the rank $r$, list index $q<r^{24}$, and bounded integer horizon advice
+vary in its input. The
+[affine-description note](affine-descriptions.md) explains the resulting
+short-program bound, and the
+[stage-construction note](stage-construction.md) explains how the stages
+are assembled into the final sequence.

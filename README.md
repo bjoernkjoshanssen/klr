@@ -4,19 +4,16 @@ A Lean formalization project investigating Chenghua Liu and Boning Meng,
 [*Separating Kolmogorov–Loveland randomness from Martin-Löf randomness*](https://arxiv.org/abs/2611.31004),
 version 1, 23 November 2026.
 
-**Status: effective strategy normalization, the infinite affine-block law,
-conditional fair-or-forced answers, Borel no-drop identities, and `MLR → KLR`
-are proved. Lemma 4 now has a proved probabilistic existence argument and an
-actual partial-recursive list search that halts at every sufficiently large
-rank. Lemma 3 now has fixed Borel partitions and a fixed-advice pool-producing
-program, with eventual halting and the two missed-position bounds proved.
-A concrete affine-description Martin-Löf test and explicit binary
-program-length bounds are also proved. The stage estimates (6)–(9) imply
-almost-sure KL randomness under the constructed block law. The unconditional
-separation theorem is not yet proved.** This repository does not assume the
-paper's conclusion, its pool lemma, or its construction as axioms.
+**Status: the separation theorem is proved for the repository's total
+computable-real strategy convention.** The actual simultaneous stage
+construction, bounded-advice horizon search, computed syndrome, short
+reconstruction programs, and infinite-sequence assembly discharge every
+construction hypothesis. The project also proves `MLR → KLR`, hence proper
+inclusion of the two defined classes. No part of the construction or the
+paper's conclusion is assumed as an axiom.
 
-The intended target is
+[Separation.lean](Klr/Separation.lean) proves the assumption-free theorem
+`Klr.exists_kolmogorovLovelandRandom_not_martinLofRandom`:
 
 ```lean
 ∃ X : Klr.Cantor,
@@ -30,6 +27,33 @@ capital simulation. Its precise scope is recorded in the
 [Miller–Nies note](docs/miller-nies.md). Total computable-real strategies now
 have a proved success-preserving rational normalization. A general partial
 computable-real source interface and its conversion remain separate obligations.
+Thus the completed theorem should be read with this explicit convention; it
+does not silently claim an additional equivalence with every partial-real
+presentation of KL randomness.
+
+## The completed construction
+
+The fixed Borel partitions from Lemma 3 are chosen before any stages. At each
+stage, one sufficiently large rank simultaneously gives a candidate meeting
+all probability estimates and a short program producing that exact affine
+event. The program has only the rank, a polynomially bounded candidate index,
+and a bounded horizon-advice integer as variable input. It computes the pool,
+horizon, syndrome, and certificate. The global recursion preserves all earlier
+supports and all previously protected finite horizons.
+
+The main entry points are:
+
+| Result | Checked content |
+| --- | --- |
+| [StagePrepared](Klr/StagePrepared.lean) | Fixes the reconstruction program before choosing a rank satisfying the candidate estimates and actual binary length budget |
+| [StageOneStep](Klr/StageOneStep.lean) | Produces a concrete block, actual horizon, all four probability bounds, and a successfully evaluated short exact affine description |
+| [StageRecursion](Klr/StageRecursion.lean) | Constructs coherent finite histories and their infinite diagonal sequence; protects every earlier horizon and obtains each strategy's eventual estimates |
+| [StageConstruction](Klr/StageConstruction.lean) | Supplies the actual extension at every stage, removing the recursion's extension premise |
+| [Separation](Klr/Separation.lean) | Proves a separating sequence, inequality of the classes, and proper inclusion of MLR in KLR |
+
+The [stage-construction note](docs/stage-construction.md) explains the
+quantifier order, finite rational computations, and the distinction between
+classical global choices and the ordinary programs needed for short descriptions.
 
 ## What is implemented
 
@@ -75,7 +99,7 @@ computable-real source interface and its conversion remain separate obligations.
 | [HorizonLaw](Klr/HorizonLaw.lean) | Infinite/finite equality of finite-answer distributions and horizon-functional integrals, including the actual early-wager expectation |
 | [LateDropBound](Klr/LateDropBound.lean) | The actual infinite-law late-drop bound from the finite-stage partial-rank, first-drop, and Borel partition estimates |
 | [StageErrorBudget](Klr/StageErrorBudget.lean) | Exact dyadic tail sums and the paper's summable `8e_j` and `4e_j` bounds |
-| [StageEstimates](Klr/StageEstimates.lean) | An explicit contract for the unfinished construction, and a proved conditional chain from estimates (6)–(9) plus effective description cover to separation |
+| [StageEstimates](Klr/StageEstimates.lean) | The stage contract and the modular implication from estimates (6)–(9) plus effective description cover to separation; the completed construction supplies its hypotheses |
 | [DescriptionBudget](Klr/DescriptionBudget.lean) | The summation and measure budget for plain binary program descriptions, with a genuine ML test for any uniformly c.e. family satisfying those budgets |
 | [Sparse](Klr/Sparse.lean) | The finite incidence, Cauchy–Schwarz, and averaging estimates used to bound total wagers on candidate supports |
 | [FiniteProbability](Klr/FiniteProbability.lean) | Actual uniform finite counting probabilities, expectations, product-sample independence, and Markov/union bounds |
@@ -100,7 +124,7 @@ computable-real source interface and its conversion remain separate obligations.
 | [SparseSearch](Klr/SparseSearch.lean) | Executable certificate-free full/restricted rank checks and partial-recursive certificate completion, with exact algebraic correctness and halting criteria |
 | [AffineDescription](Klr/AffineDescription.lean) | An actual binary program/input interpreter, uniformly c.e. affine cylinder enumeration, and a genuine Martin-Löf test with the proved plain-description budget |
 | [AffineProgramLength](Klr/AffineProgramLength.lean) | Explicit compiler length bounds and eventual rank budgets for polynomially bounded input and paired advice |
-| [AffineDescriptionSeparation](Klr/AffineDescriptionSeparation.lean) | Final conditional separation using the implemented interpreter; only stage estimates and actual sufficiently short reconstruction programs remain hypotheses |
+| [AffineDescriptionSeparation](Klr/AffineDescriptionSeparation.lean) | Modular separation using the implemented interpreter, instantiated by the stage estimates and actual short programs from the completed construction |
 
 These definitions enforce **uniform** effectiveness. It would be incorrect to
 define a Martin-Löf test merely by requiring each level separately to be
@@ -117,9 +141,9 @@ how the adaptive transcript is represented, why the countable first-drop
 transfer has no finite stopping-time bound, and how no-drop equality extends
 from cylinders to all Borel transcript events.
 
-The [stage-estimates note](docs/stage-estimates.md) states the remaining
-construction hypotheses precisely and explains the complete checked reduction
-from those hypotheses to a separating sequence.
+The [stage-estimates note](docs/stage-estimates.md) states the construction's
+precise output contract and explains the checked reduction from those estimates
+and descriptions to a separating sequence.
 
 The [sparse-candidate note](docs/sparse-candidates.md) follows the proof of
 Lemma 4 from uniform support and matrix counts through effective exhaustive
@@ -183,27 +207,32 @@ central results:
 #print axioms Klr.AffineDescription.per_program_bound
 #print axioms Klr.AffineProgramLength.eventually_programFor_pair_advice_length_budget
 #print axioms Klr.exists_separating_of_stage_estimates_and_affine_programs
+#print axioms Klr.StagePrepared.Prepared.to_step
+#print axioms Klr.StageConstruction.exists_sequence
+#print axioms Klr.exists_kolmogorovLovelandRandom_not_martinLofRandom
+#print axioms Klr.martinLofRandom_ssubset_kolmogorovLovelandRandom
 ```
 
-## What remains
+## Scope and further work
 
-The major outstanding obligation is the simultaneous stage construction,
-including reconstruction of the chosen
-horizons and syndromes by fixed-stage programs. The effective sparse-list
-construction, fixed-partition computable pool lemma, affine decoder, rank
-checks, and compiler length bounds are proved. These components still need
-to be combined to establish the actual
-stage estimates and short descriptions of the selected blocks.
-`exists_separating_of_stage_estimates_and_affine_programs` is a **conditional
-reduction** with precisely those remaining hypotheses. Uniform enumerability
-and the per-description measure bounds are discharged by the implemented
-interpreter. The older generic description-family interface remains available.
-The full partial computable-real presentation also needs
-its own source-model bridge; this does not block working with the paper's
-total-strategy convention. Work is focused on dependencies of the separating
-sequence theorem, with `MLR → KLR` serving as a check of the definitions.
+The separation theorem has no stage-estimate, reconstruction, program-length,
+or effectiveness premise. The older conditional reductions remain useful as
+modular APIs, and the construction now supplies their witnesses.
+
+The remaining scope issue is a separate source-model bridge for general partial
+computable-real strategies. The rational-wager partial-program development
+and the total computable-real normalization are already proved, but the project
+does not conflate them with such a bridge. Independent review of that convention
+and of the mathematical encoding remains valuable.
+
+The corollary `exists_not_martinLofRandom_no_partial_rational_success` already
+shows that the separating sequence defeats every infinite fresh run of a
+partial rational-wager source program. The outstanding bridge specifically
+concerns general partial computable-real capital, not all partial strategies.
 
 The [audit and formalization roadmap](docs/paper-audit.md) explains which parts
 of the paper were checked informally, which components are already in Lean,
-and why the remaining work is substantial. No error in the paper was identified
-in the initial informal audit; that is not a formal verification of its theorem.
+and how the stage construction is represented. No mathematical correction to
+the paper's stage argument was needed. The formalization uses a stronger finite
+wager objective and explicit exhaustive code reconstruction, with the same
+required estimates and description budget.

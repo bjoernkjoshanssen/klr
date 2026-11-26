@@ -14,8 +14,8 @@ Computability is witnessed by uniform rational approximations, encoded by
 their integer numerator and natural denominator.
 
 The definition of KL randomness here uses total strategies, as in the paper.
-The equivalence with the partial-strategy presentation is a separate theorem
-in the literature; this file does not claim to formalize that equivalence.
+`PartialBettingCapital` proves totalization for partial rational-wager programs.
+The bridge from general partial computable-real capital remains separate.
 -/
 
 @[expose] public section

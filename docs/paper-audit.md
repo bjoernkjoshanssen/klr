@@ -87,12 +87,25 @@ following Definition 6.1, printed page 10, states that a partial test can be
 replaced by two total, even primitive recursive, tests whose success sets cover
 its success set.
 
-The present definition follows the paper's total formulation. The conversion
-from partial tests is not yet a Lean theorem here. A complete formalization of
-the conventional partial-strategy statement should include that conversion or
-state the total formulation explicitly.
+The construction is now implemented for partial rational-wager programs. Each
+of two simulators bets only on one parity of input positions and reads fresh
+positions of the other parity while waiting for a computation. Answers read
+while waiting are cached and replayed if the source later requests them. This
+is necessary to retain the no-repeated-query condition.
+
+The code proves primitive recursive fresh-query scheduling, liveness on an
+infinite source run, nonnegative fair capital, and exact simulation of the
+selected parity factor. The product of the two source factors is the original
+capital, so an unbounded source forces at least one factor to be unbounded.
+The [Miller–Nies note](miller-nies.md) records the checked statement and the
+precise scope of the program model. Conversion of arbitrary partial
+computable-real capital to rational wagers remains a distinct effectivity
+obligation; no general real-capital equivalence is assumed.
 
 Primary source: [Miller–Nies paper](https://people.math.wisc.edu/~jsmiller8/Papers/questionsfinal.pdf).
+The parity simulation is described in
+[Bienvenu's thesis](https://www.labri.fr/perso/lbienvenu/docs/publications/bienvenu-phd.pdf),
+Remark 1.7.7, printed page 35, attributed there to Merkle.
 
 ## Review of the paper's central arguments
 
@@ -116,10 +129,25 @@ the rank drop is exactly one. It also proves the solution count `2^(m-r)` for
 a surjective binary linear map from `m` bits to `r` equations and the fraction
 `2^-r` of assignments satisfying the equations.
 
-**Still required:** use these algebraic facts to prove conditional probability
-statements under uniform affine block measures, and then under an adaptive
-transcript. Compatibility cannot be omitted: an impossible history has no
-conditional bit distribution of the intended kind.
+The full-unread-rank observation law is now proved. For a finite family of old
+constraints `A`, a disjoint new block `E` of rank `r`, and an adaptive transcript
+`v` leaving full unread rank, the actual conditioned measure satisfies
+
+\[
+\lambda(C_\pi(v)\cap E\mid A)
+  =2^{-r}\lambda(C_\pi(v)\mid A).
+\]
+
+The proof constructs the finite ambient coordinates and counts residual
+syndrome fibers. It does not assume the desired independence. Null transcript
+events are included. Pairwise disjoint old blocks are proved to have positive
+joint probability, and normalizing by the new syndrome's mass gives equality
+of old/new stage transcript probabilities. See the
+[finite-stage note](finite-stage.md) for the precise module interfaces.
+
+**Still required:** the conditional fair-or-forced answer law after partial
+rank loss. Compatibility cannot be omitted there: an impossible history has
+no conditional bit distribution of the intended kind.
 
 ### 2. Square-summable normalization — Lemma 2, pages 4–5
 
@@ -277,18 +305,23 @@ finitely many late blocks, while the early total wagers have finite expectation.
 On fair queries, square-summable increments give an `L²`-bounded martingale.
 Its convergence and the summable forced wagers bound log capital from above.
 
-**Formal status:** the product law, adaptive conditional-fairness statement,
-stopping-event identities, and final almost-sure boundedness argument remain.
-The existing finite transcript theorem is an initial component, not a substitute
-for these measure comparisons.
+**Formal status:** finite-stage cylinder preservation and the first-rank-drop
+tail transfer are proved. The latter uses a prefix-free countable family of
+pre-drop transcripts and has no finite upper bound on the stopping time. The
+numerical remaining rank is proved nonincreasing, and the stopping event is
+proved equivalent to the first strict numerical rank decrease. The
+final infinite product law, the no-drop restriction equality for all Borel
+transcript events, the general conditional fair-or-forced answer law, and the
+final almost-sure boundedness argument remain.
 
 ## Suggested dependency order
 
 1. Finish the effective, strategy-level version of Lemma 2 and the standard
    implication ML randomness ⇒ KL randomness. The definitions and transcript
    law are now available.
-2. Build uniform finite affine-block laws and prove their adaptive observation
-   and first-rank-drop identities.
+2. Extend the proved finite affine-block and first-rank-drop identities to
+   conditional answers after partial rank loss and to the no-drop restriction
+   equality on all Borel transcript events.
 3. Prove the probabilistic construction of sparse rank-preserving lists, using
    the existing incidence/weight estimate downstream.
 4. Formalize the computable pool lemma, preserving the order of its
@@ -297,24 +330,21 @@ for these measure comparisons.
    reconstruction of horizons and syndromes.
 6. Construct the final measure and prove almost-sure KL randomness and support
    inclusion in one ML test.
-7. Finish the separating-sequence theorem and the partial/total formulation
-   bridge, then audit the axioms of the final theorem.
+7. Finish the separating-sequence theorem and the computable-real
+   rationalization bridge, then audit the axioms of the final theorem.
 
 The first two stages provide further independent checks of the probability and
 effectivity interfaces before undertaking the longest construction arguments.
 
-## Why this is independent of `tt-auto`
+## Dependencies
 
-The `tt-auto` repository contains useful Cantor-space and arithmetic-hierarchy
-infrastructure, but its hierarchy is built around the degree-rigidity project's
-relative recursion machinery. No small, ready-made ML-randomness development
-was found there. Direct use of Mathlib's `REPred`, program codes, finite linear
-algebra, and probability library gives this project a smaller dependency
-surface and leaves the earlier project unchanged.
+Mathlib is the only direct library dependency. The project uses Mathlib's
+`REPred`, program codes, finite linear algebra, and probability library, with
+the additional rational arithmetic and strategy infrastructure developed here.
 
 ## References
 
 - [Liu–Meng, arXiv:2611.31004v1](https://arxiv.org/abs/2611.31004v1).
 - [Miller–Nies, *Randomness and computability: open questions*](https://people.math.wisc.edu/~jsmiller8/Papers/questionsfinal.pdf), especially Section 6.
+- [Bienvenu, doctoral thesis](https://www.labri.fr/perso/lbienvenu/docs/publications/bienvenu-phd.pdf), Remark 1.7.7.
 - [Mathlib v4.36.0](https://github.com/leanprover-community/mathlib4/tree/v4.36.0).
-- [`tt-auto`](https://github.com/bjoernkjoshanssen/tt-auto), inspected for reusable foundations, not imported.

@@ -136,6 +136,18 @@ The only direct library dependency is **Mathlib**. The probability,
 computability, and arithmetic developments are all contained in this repository
 or Mathlib.
 
+## Palomar entry preparation
+
+The [Palomar preparation note](docs/palomar.md) describes the independent
+[Challenge](Challenge.lean), proved [Solution](Solution.lean), Comparator
+configuration, and provenance metadata. The two deliberate theorem holes in
+Challenge are isolated statement templates; they are not imported by the
+proved library. The full registry preflight verifies one exact public commit
+before submission. No Palomar registration is claimed.
+
+The repository is licensed under [Apache-2.0](LICENSE), as selected by its
+maintainer. Cited papers and external dependencies retain their own licences.
+
 The [finite-stage note](docs/finite-stage.md) explains the exact measure identity,
 how the adaptive transcript is represented, why the countable first-drop
 transfer has no finite stopping-time bound, and how no-drop equality extends
@@ -169,8 +181,8 @@ lake build
 `Klr.lean` imports every mathematical module. The GitHub Actions workflow builds
 the library and audits the transitive axioms of declarations under `Klr`.
 Only Lean's standard `propext`, `Classical.choice`, and `Quot.sound` are allowed.
-Unfinished work is recorded in documentation; it is not represented by `sorry`
-or additional axioms.
+The proved library has no `sorry` or additional axioms. Palomar's two independent
+Challenge statement templates are kept outside that library and its axiom audit.
 
 For example, after `import Klr`, these checks expose the dependencies of several
 central results:

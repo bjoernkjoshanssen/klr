@@ -11,8 +11,8 @@ The initial informal review found **no mathematical error requiring correction**
 In particular, the normalization, the use of non-effective finite advice, and
 the transfer from finite-stage measures to the final measure survive the
 checks described below. This conclusion is limited: the proof has not been
-formalized in full, and the most substantial construction lemmas remain open
-formalization tasks.
+formalized in full, and the simultaneous stage construction remains an open
+formalization task.
 
 The repository contains proved foundations and intermediate lemmas, rather
 than a theorem whose missing arguments are hidden in hypotheses or axioms.
@@ -21,8 +21,10 @@ There is currently no unconditional Lean theorem asserting existence of a
 KL-random sequence that is not ML random. The final probabilistic reduction is
 checked, with the construction's concrete finite-stage estimates and effective
 program-reconstruction obligations left explicit. Lemma 4, including an actual
-effective exhaustive search and eventual halting, is now proved. The affine
-description test and its compiler bounds are also implemented.
+effective exhaustive search and eventual halting, is now proved. Lemma 3 is
+also proved, including fixed Borel partitions, finite advice, actual program
+extraction, eventual halting, and the two missed-position bounds. The affine
+description test and its compiler bounds are implemented.
 
 ## Definitions and their verification
 
@@ -34,9 +36,9 @@ measure is constructed as the infinite product of Bernoulli measures of
 parameter `1/2`; it is not a measure supplied as an unspecified parameter.
 The cylinder formula is proved:
 
-\[
+$$
 \lambda([s])=2^{-|s|}.
-\]
+$$
 
 An effectively open class is a union of cylinders indexed by a predicate
 satisfying Mathlib's `REPred`. This is genuine partial-recursive effectivity.
@@ -78,9 +80,9 @@ definitions.
 The standard implication **ML randomness ⇒ KL randomness** is now proved for
 these exact definitions. `MaximalInequality` gives
 
-\[
+$$
 \lambda\{X:\exists n,\ d(\operatorname{transcript}_\pi(X,n))>2^m\}\le 2^{-m}
-\]
+$$
 
 by a finite hitting-tree induction and a monotone limit. `EffectiveScan`
 turns a computable condition on finite adaptive transcripts into a uniformly
@@ -96,9 +98,9 @@ The finite transcript law is proved directly. For a fixed transcript `v`, its
 queries form a fixed injective list of coordinates, even though the rule is
 adaptive. Its input event is the corresponding finite assignment cylinder, so
 
-\[
+$$
 \lambda\{X:\operatorname{transcript}_{\pi}(X,|v|)=v\}=2^{-|v|}.
-\]
+$$
 
 ### Total and partial strategies
 
@@ -135,9 +137,9 @@ Remark 1.7.7, printed page 35, attributed there to Merkle.
 Let `D` be the matrix of unread columns other than the next queried column `c`.
 For residual syndrome `z`, the two possible answers have completion sets
 
-\[
+$$
 D x=z,\qquad D x=z-c.
-\]
+$$
 
 If `c` lies in the range of `D`, subtracting a preimage of `c` gives a bijection
 between the two fibers. They therefore have equal cardinalities. If `c` is
@@ -154,10 +156,10 @@ The full-unread-rank observation law is now proved. For a finite family of old
 constraints `A`, a disjoint new block `E` of rank `r`, and an adaptive transcript
 `v` leaving full unread rank, the actual conditioned measure satisfies
 
-\[
+$$
 \lambda(C_\pi(v)\cap E\mid A)
   =2^{-r}\lambda(C_\pi(v)\mid A).
-\]
+$$
 
 The proof constructs the finite ambient coordinates and counts residual
 syndrome fibers. It does not assume the desired independence. Null transcript
@@ -182,28 +184,28 @@ bit distribution of the intended kind.
 After the positive-reserve and rational approximation step, the capital is
 bounded below by `1/4`. With original signed wager fractions `f_t`, put
 
-\[
+$$
 Q_n=\sum_{t<n}f_t^2,
 \qquad
 h_t=\frac{f_t}{2(1+Q_t)}.
-\]
+$$
 
 The elementary telescoping bound is now formalized:
 
-\[
+$$
 \sum_{t<n}h_t^2
 \le \frac12\left(1-\frac1{1+Q_n}\right)
 \le\frac12,
 \qquad
 \sum_{t=0}^{\infty}h_t^2\le\frac12.
-\]
+$$
 
 The reserve is essential to the informal success-preservation argument. If
 `M_n` is the sum of the signed original returns, then the paper obtains
 
-\[
+$$
 M_n\ge -\log4+Q_n/4.
-\]
+$$
 
 Abel summation against the positive decreasing factors `1/(2(1+Q_t))` then
 handles bounded and unbounded `Q_n` separately. When `Q_n` is bounded, the
@@ -216,16 +218,16 @@ stronger `1/4` inequality.
 The full deterministic implication is now proved as
 `normalization_preserves_unbounded_capital`. If
 
-\[
+$$
 C_n=\prod_{t<n}(1+x_t)\ge\delta>0,
 \qquad |x_t|<1,
-\]
+$$
 
 and `C_n` is unbounded, then
 
-\[
+$$
 D_n=\prod_{t<n}\left(1+\frac{x_t}{2(1+\sum_{s<t}x_s^2)}\right)
-\]
+$$
 
 is unbounded. Here `x_t` is the signed return along a fixed transcript, so
 `x_t²=f_t²` and this is the same damping as in the paper.
@@ -235,18 +237,18 @@ The full effective strategy lemma is now proved in
 module approximates the **additive stake** of `(d+1)/2` at a transcript `v`
 by
 
-\[
+$$
 \widetilde s(v)
 =\frac{q(v1,|v|+2)-q(v0,|v|+2)}4.
-\]
+$$
 
 It accumulates these signed rational stakes into a fair rational capital
 `r(v)`. The geometric error budget gives the uniform all-branch estimate
 
-\[
+$$
 \left|r(v)-\frac{d(v)+1}{2}\right|
 \le\frac14(1-2^{-|v|})\le\frac14.
-\]
+$$
 
 Consequently `r(v)≥1/4`, its wager fractions have absolute value strictly
 less than one, and success of `d` implies success of `r`. Approximating
@@ -280,10 +282,29 @@ finite approximations, and a limsup bound on the weighted query probability
 together justify termination for every sufficiently large pool size. The pool
 program is not claimed to halt at every smaller size.
 
-**Formal status:** this lemma is not yet encoded. It needs a careful combination
-of weak convergence in `L²`, Borel representatives, approximation by cylinder
-functions, and an explicit finite search. The finite advice must be fixed before
-the trial pool size is supplied.
+**Formal status:** the complete lemma is now proved by
+`PoolConstruction.exists_fixed_partitions_computable_pools`. Its theorem
+chooses all Borel partitions before the protected scan prefix, error tolerance,
+and position cutoff, then chooses a rational margin and one ordinary
+`Nat.Partrec.Code` before the varying input size. Successful output is an
+ordinary finite-list encoding, with the actual missed-position bounds.
+
+The proof extracts the common weak subsequence through Mathlib's compact
+metrizable weak-dual unit ball and Hilbert-space Riesz representation. This
+replaces the paper's cylinder-martingale construction of the weak limits.
+Measurable representatives are clipped to `[0,1]`, and the high sets are
+their level sets at one. Weak convergence proves vanishing high missed mass;
+continuity of measure proves the low near-one margin.
+
+Finite Boolean and rational prefix tables approximate the high sets and
+limit functions. Their ordinary finite-list encodings are hard-coded into
+the executable verifier, together with a finite list of actual scan rules.
+Exact rational averaging is proved equal to the relevant fair-coin measures
+and integrals. The weak selection bound `4/M + ε` suffices in place of the
+paper's sharper diagonal constant, and finite-horizon convergence supplies
+an accepted candidate for every sufficiently large M. A separate soundness
+proof handles every accepted pair, not only these existence witnesses.
+See the [computable-pool note](computable-pools.md) for the full checked chain.
 
 ### 4. Sparse rank-preserving lists — Lemma 4, pages 8–9
 
@@ -323,10 +344,10 @@ choice of support enumeration is computable.
 position appears in at most a fraction `δ` of the candidates, and the pool's
 nonnegative weights satisfy `∑ w_a² ≤ C`, then
 
-\[
+$$
 \frac1J\sum_q\sum_{a\in S_q}w_a
 \le \delta\sqrt{M C}.
-\]
+$$
 
 This is double counting followed by Cauchy–Schwarz. `SparseCandidateWeights`
 connects it directly to the constructed list, and proves that restricting to
@@ -369,9 +390,9 @@ reconstructing it is therefore a central part of the proof.
 The description budget in Section 3 uses **plain**, not prefix-free, programs.
 There are `2^d` descriptions of length `d`, and
 
-\[
+$$
 \sum_{p\in2^{<\omega}}2^{-2|p|-n-1}=2^{-n}.
-\]
+$$
 
 The budget module formalizes this counting and summation step.
 `AffineDescription` now instantiates it with an actual interpreter: a binary
@@ -388,11 +409,11 @@ and an actual partial-recursive right-inverse completion. The certificate is
 computed output; it need not be written literally into the binary description.
 `AffineProgramLength` proves that the concrete compiler satisfies
 
-\[
+$$
 |\operatorname{programFor}(e,n)|
 \le2\max\bigl(\operatorname{size}(\operatorname{encode}e),
 \operatorname{size}(n)\bigr).
-\]
+$$
 
 For a fixed program `e`, polynomially bounded numerical input and paired advice
 therefore satisfy `2|p|+level+1≤r` at every sufficiently large rank. These are
@@ -457,9 +478,9 @@ zero-mass histories.
 
 `FairForced` factors normalized capital as
 
-\[
+$$
 D_n=F_nG_n,
-\]
+$$
 
 where `F_n` multiplies the usual return factor only at fair queries and `G_n`
 only at forced queries. Both products are nonnegative. The actual fair
@@ -467,9 +488,9 @@ child-cylinder identity proves conservation of capital-weighted probability
 mass for `F`. A finite-tree maximal inequality and a limit therefore show that
 `F_n` is bounded almost surely. For the other factor,
 
-\[
+$$
 G_n\le\exp\!\left(\sum_{t<n,\ \text{forced}}|h_t|\right).
-\]
+$$
 
 Thus summability of the absolute forced wagers implies boundedness of `D_n`
 almost surely. This avoids a separate formalization of the `L²` martingale
@@ -502,10 +523,10 @@ branches through a horizon. `HorizonLaw` transports finite-answer distributions
 and the actual early-wager expectation from the finite stage to `ρ`.
 `LateDropBound` proves the event decomposition giving
 
-\[
+$$
 \rho(\text{late drop in block }j)
 \le 7e_j+\sum_{k>j}e_k=8e_j.
-\]
+$$
 
 `StageErrorBudget` proves the exact dyadic tail identity and the summability
 of these bounds. `EarlyLateWagers` proves equation (11) from the two actual
@@ -526,18 +547,17 @@ construction; the code does not posit those witnesses as axioms.
 
 ## Suggested dependency order
 
-1. Formalize the computable pool lemma, preserving the order of its
-   non-effective finite choices and its effective search.
-2. Apply the effective sparse-list construction and support-weight estimates
+1. Apply the fixed-partition computable pool theorem, effective sparse-list
+   construction, and support-weight estimates
    to the actual finite-stage measures and normalized wagers.
-3. Encode the stage construction and its actual descriptions, including the
+2. Encode the stage construction and its actual descriptions, including the
    reconstruction of horizons and syndromes, proving the `StageEstimates`
    and successful short-program contracts simultaneously.
-4. Apply the checked final reduction to those constructed witnesses and
+3. Apply the checked final reduction to those constructed witnesses and
    audit the resulting unconditional theorem's axioms.
 
 The effective normalization, infinite block law, no-drop and conditional
-answer identities, effective Lemma 4, concrete affine-description test,
+answer identities, effective Lemmas 3 and 4, concrete affine-description test,
 quantitative Section 6 reduction, and `MLR → KLR` check now provide the
 required downstream interfaces. A full partial-real source-model bridge can be
 treated separately; the paper's construction uses total strategies.

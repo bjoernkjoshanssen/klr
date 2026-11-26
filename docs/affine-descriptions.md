@@ -13,19 +13,19 @@ finite data: an ambient width, a row count, Boolean matrix rows, a Boolean
 syndrome, and Boolean rows of a proposed right inverse. Missing entries are
 zero. The interpreted equations are
 
-\[
+$$
 A(X\mathbin{\upharpoonright}M)=y
-\]
+$$
 
 over the field with two elements. The finite Boolean checker `AffineCode.valid`
-checks \(AR=I_r\). Its total computability is proved, and acceptance implies
+checks $AR=I_r$. Its total computability is proved, and acceptance implies
 actual surjectivity of the interpreted matrix. Consequently
 
-\[
+$$
 \operatorname{fairCoin}(\operatorname{AffineCode.event}(c))=2^{-r}
-\]
+$$
 
-for every verified code of row count \(r\).
+for every verified code of row count $r$.
 
 The representation covers all full-row-rank affine systems, not just systems
 already presented with a special matrix form.
@@ -83,24 +83,24 @@ theorem is
 run (programFor e n) = (e.eval n).map decodeOutput
 ```
 
-For test level \(n\), binary program \(p\), and prefix \(s\), the predicate
-`AffineDescription.W (n,p,s)` says that the program halts with a code \(c\),
+For test level $n$, binary program $p$, and prefix $s$, the predicate
+`AffineDescription.W (n,p,s)` says that the program halts with a code $c$,
 the code passes the certificate verifier, its rank satisfies
 
-\[
+$$
 r\ge 2|p|+n+1,
-\]
+$$
 
-and its prefix checker accepts \(s\). `rePred_W` proves uniform computable
+and its prefix checker accepts $s$. `rePred_W` proves uniform computable
 enumerability of this predicate.
 
 A program has at most one output. Its accepted cylinders therefore form
 either the empty set or the single verified affine event, whose measure is
-at most \(2^{-(2|p|+n+1)}\). The existing exact plain-description budget is
+at most $2^{-(2|p|+n+1)}$. The existing exact plain-description budget is
 
-\[
+$$
 \sum_{p\in\{0,1\}^{<\omega}}2^{-(2|p|+n+1)}=2^{-n}.
-\]
+$$
 
 This counts all binary strings and needs no prefix-free condition. Countable
 subadditivity gives the test-level bound. The definition
@@ -113,27 +113,27 @@ evaluated exact description. It deliberately asserts no length bound.
 ## What the program-length lemmas establish
 
 [AffineProgramLength.lean](../Klr/AffineProgramLength.lean) proves exact binary
-encoding bounds for this interpreter. Writing \(\operatorname{size}(n)\) for
+encoding bounds for this interpreter. Writing $\operatorname{size}(n)$ for
 the binary length of a natural number,
 
-\[
+$$
 |\operatorname{programFor}(e,n)|
 \le 2\max\bigl(\operatorname{size}(\operatorname{encode}(e)),
                  \operatorname{size}(n)\bigr).
-\]
+$$
 
 There is also an additive bound separating the fixed header and input sizes.
-For every fixed algorithm \(e\), exponent \(k\), and test level \(\ell\), the
+For every fixed algorithm $e$, exponent $k$, and test level $\ell$, the
 theorem `eventually_programFor_bounded_pow_length_budget` proves that, for all
-sufficiently large \(r\), uniformly over \(n\le r^k\),
+sufficiently large $r$, uniformly over $n\le r^k$,
 
-\[
+$$
 2|\operatorname{programFor}(e,n)|+\ell+1\le r.
-\]
+$$
 
 `eventually_programFor_pair_advice_length_budget` proves the corresponding
-statement for input \(\operatorname{pair}(r,q)\), uniformly over advice indices
-\(q\le r^k\). The proof uses elementary bounds on binary size and an explicit
+statement for input $\operatorname{pair}(r,q)$, uniformly over advice indices
+$q\le r^k$. The proof uses elementary bounds on binary size and an explicit
 eventual threshold. It does not require an optimality theorem for Mathlib's
 syntactic program encoding.
 
@@ -153,14 +153,14 @@ their intended multiplicities. The thresholds are exact rationals.
 
 `GoodEntry.maskedFullRank`, `GoodEntry.selectedColumns_card`, and
 `GoodEntry.restricted_fullRank` prove that deleting the zero padding leaves
-a genuine full-rank system on exactly the prescribed \(m\) support columns.
+a genuine full-rank system on exactly the prescribed $m$ support columns.
 
 [SparseListSearchComputable.lean](../Klr/SparseListSearchComputable.lean) proves
 the entire checker computable. [SparseListSearchEffective.lean](../Klr/SparseListSearchEffective.lean)
 implements exhaustive search over natural encodings of finite lists and
 proves that it halts exactly when a good code exists. The finite existence
 bridge and its specialization to
-\(M=r^8\), \(m=r^2\), and \(J=M^3\) are in
+$M=r^8$, $m=r^2$, and $J=M^3$ are in
 [SparseListCodeBridge.lean](../Klr/SparseListCodeBridge.lean) and
 [SparseListConstruction.lean](../Klr/SparseListConstruction.lean). For fixed
 positive rational density and error tolerance, the actual list-producing
@@ -175,9 +175,9 @@ each test level, a successfully evaluated verified affine description with
 the required length/rank inequality whose event contains a selected block
 event. It concludes
 
-\[
+$$
 \exists X\;[\operatorname{KLR}(X)\land\neg\operatorname{MLR}(X)].
-\]
+$$
 
 The exact-event variant replaces containment by equality. Uniform
 enumerability, interpreter correctness, and description measure budgets are
@@ -188,7 +188,7 @@ the stated estimates and reconstructing the selected affine system,
 including its coordinates and syndrome, from a fixed algorithm and
 sufficiently short input. The polynomial-advice theorem does not show that
 the paper's actual choices have polynomially bounded advice. In particular,
-the existence of an arbitrary \(r\)-bit syndrome does not supply its short
+the existence of an arbitrary $r$-bit syndrome does not supply its short
 description; the construction must compute the chosen syndrome or otherwise
 justify its description cost. The repository does not yet prove the
 unconditional separation theorem.

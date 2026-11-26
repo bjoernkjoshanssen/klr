@@ -11,15 +11,15 @@ the statements below are constructed from the repository's fair-coin measure.
 An `AffineBlock` consists of a finite support `S ⊆ ℕ`, a number of rows `r`, a
 surjective linear map
 
-\[
+$$
 B:\mathbb F_2^S\longrightarrow\mathbb F_2^r,
-\]
+$$
 
 and a syndrome `y`. Its event is
 
-\[
+$$
 E=\{X:B(X\mathbin{\upharpoonright}S)=y\}.
-\]
+$$
 
 Surjectivity is the formal statement of full row rank. For a fixed transcript
 `v` of a scan rule `π`, let `Qπ(v)` be its finite set of queried positions. The
@@ -28,16 +28,16 @@ predicate `UnreadFullRank B π v` says that the map using only the columns in
 
 For a finite family of earlier blocks, put
 
-\[
+$$
 A=\bigcap_{k<j}E_k,\qquad P_{j-1}=\lambda(\,\cdot\mid A).
-\]
+$$
 
 `AffineBlock.finiteStage_identity` proves
 
-\[
+$$
 P_{j-1}(C_\pi(v)\cap E)
   =2^{-r}P_{j-1}(C_\pi(v))
-\]
+$$
 
 from disjointness of `S` from every earlier support and full unread rank after
 `v`. There is no assumed independence theorem in the hypotheses. The proof
@@ -61,24 +61,24 @@ The proof has three separate ingredients.
    into its observed and unread parts. For each observed value `o`, the new
    equation becomes
 
-   \[
+   $$
    B_U u=y-B_Oo.
-   \]
+   $$
 
    If `B_U` is onto, this fiber has exactly `2^(|U|-r)` elements. This number
    is independent of `o` and of the residual syndrome. Summing over any
    predicate `P(o)` gives the natural-number identity
 
-   \[
+   $$
    |\{x:P(x_O)\land Bx=y\}|\,2^r=|\{x:P(x_O)\}|.
-   \]
+   $$
 
 3. **Actual conditioning.** `FiniteStage` transports that count to the
    fair-coin measure and uses Mathlib's definition
 
-   \[
+   $$
    \lambda(\,\cdot\mid A)=\lambda(A)^{-1}\lambda\mathbin{\upharpoonright}A.
-   \]
+   $$
 
    The normalization is by `λ(A)`, never by the probability of the particular
    transcript. This is why the formula covers null transcript events without
@@ -96,18 +96,18 @@ assumption: after `v` is fixed, all query positions along `v` are fixed.
 
 `AffineFamily` proves, for pairwise disjoint full-rank blocks,
 
-\[
+$$
 \lambda\Bigl(\bigcap_{k<j}E_k\Bigr)
  =\prod_{k<j}2^{-r_k}>0.
-\]
+$$
 
 Thus the finite-stage laws are probability measures. A disjoint new block has
 probability `2^-r` under the old stage law, and division by this nonzero value
 gives the normalized cylinder identity
 
-\[
+$$
 \lambda(C_\pi(v)\mid A\cap E)=\lambda(C_\pi(v)\mid A)
-\]
+$$
 
 whenever its unread columns remain full rank. The theorem is named
 `AffineBlock.nextStageLaw_transcript`.
@@ -126,10 +126,10 @@ the existence of a first triggering time at or after `N`.
 
 For an affine block, the trigger is
 
-\[
+$$
 \operatorname{Full}(v)\ \land\
 \neg\operatorname{Full}(v0).
-\]
+$$
 
 Appending `0` or `1` gives the same queried-position set: the next position is
 selected before the new bit is observed. Hence this is a predictable loss of
@@ -148,10 +148,10 @@ proves that it starts at `r` and never increases, and proves that full unread
 rank is equivalent to numerical rank `r`. It then identifies the event above
 with
 
-\[
+$$
 \exists t>N\;\bigl[R(t)<R(t-1)\ \land\
   \forall\,0<s<t,\ R(s)\not<R(s-1)\bigr].
-\]
+$$
 
 `StoppingTranscript.nextStage_strictRankDropTail` proves preservation of this
 numerically defined first-drop tail under the new syndrome conditioning.
@@ -161,19 +161,19 @@ numerically defined first-drop tail under the new syndrome conditioning.
 The cylinder identity above requires full unread rank. The next-answer law
 does not. `AffineAnswer` conditions on the actual history
 
-\[
+$$
 H=(A\cap E)\cap C_\pi(v),\qquad \lambda(H)>0.
-\]
+$$
 
 Let `a = π(v)` be the next queried coordinate in the new block. The module
 proves the following equivalence for the current remaining rank, even when
 earlier observations have already lowered it:
 
-\[
+$$
 \bigl[\forall b\in\{0,1\},\ \lambda(X(a)=b\mid H)=1/2\bigr]
 \quad\Longleftrightarrow\quad
 R(vb)=R(v).
-\]
+$$
 
 The value `R(vb)` is independent of `b`, since the next coordinate is selected
 before its answer is known. If the rank strictly decreases, there is instead
@@ -200,9 +200,9 @@ identity for which null histories were harmless.
 Let `T` be the first strict remaining-rank decrease for the new block, with
 `T=∞` if there is none. `NoDrop` defines the actual observation map
 
-\[
+$$
 O_\pi(X)(n)=X\bigl(\pi(\operatorname{transcript}_\pi(X,n))\bigr)
-\]
+$$
 
 and proves its measurability. It also proves that input cylinders generate
 the measurable structure of Cantor space and determine finite measures.
@@ -216,19 +216,19 @@ to **every Borel set of transcripts**.
 
 Writing `N` for the transcript-space no-drop event, the strongest statement is
 
-\[
+$$
 (O_{\pi*}P_j)\mathbin{\upharpoonright}N
 =
 (O_{\pi*}P_{j-1})\mathbin{\upharpoonright}N.
-\]
+$$
 
 This is `NoDrop.nextStage_map_restrict_noDrop`, the finite-stage identity in
 equation (10) of the paper. Equivalently, `nextStage_noDrop_borel` states
 
-\[
+$$
 P_j(O_\pi^{-1}(F)\cap\{T=\infty\})
 =P_{j-1}(O_\pi^{-1}(F)\cap\{T=\infty\})
-\]
+$$
 
 for every measurable transcript set `F`. These are restrictions, not
 renormalized conditional measures; no positive probability of `{T=∞}` is
@@ -260,10 +260,10 @@ For a fixed adaptive transcript, choose a stage containing every block
 meeting its queried positions, then telescope back through the later
 full-unread-rank blocks. This proves
 
-\[
+$$
 \rho(C_\pi(v))=P_n(C_\pi(v))
 \quad\text{if every block }k\ge n\text{ still has full unread rank at }v.
-\]
+$$
 
 `BlockProduct.law_inputEvent_eq_of_fullRank` is the exact identity, and
 `law_unionEvent_eq_of_fullRank` extends it to unbounded prefix-free stopping
@@ -274,9 +274,9 @@ and child transcript events. Thus the fair-or-forced law also holds under
 the actual infinite measure. In particular, when the next query causes no
 block rank drop,
 
-\[
+$$
 \rho(C_\pi(vb))=\tfrac12\rho(C_\pi(v))\qquad(b=0,1).
-\]
+$$
 
 This mass identity includes null histories. At a rank drop all parent mass
 lies in one child and the other child has mass zero. The corresponding

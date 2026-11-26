@@ -8,7 +8,9 @@ version 1, 23 November 2026.
 conditional fair-or-forced answers, Borel no-drop identities, and `MLR → KLR`
 are proved. Lemma 4 now has a proved probabilistic existence argument and an
 actual partial-recursive list search that halts at every sufficiently large
-rank. A concrete affine-description Martin-Löf test and explicit binary
+rank. Lemma 3 now has fixed Borel partitions and a fixed-advice pool-producing
+program, with eventual halting and the two missed-position bounds proved.
+A concrete affine-description Martin-Löf test and explicit binary
 program-length bounds are also proved. The stage estimates (6)–(9) imply
 almost-sure KL randomness under the constructed block law. The unconditional
 separation theorem is not yet proved.** This repository does not assume the
@@ -84,6 +86,16 @@ computable-real source interface and its conversion remain separate obligations.
 | [SparseCandidateWeights](Klr/SparseCandidateWeights.lean) | The list's incidence-to-weight bridge and a rank-preserving candidate with support weight at most `(2m/M)/(1−θ) * sqrt(MC)` |
 | [SparseListConstruction](Klr/SparseListConstruction.lean) | Actual partial-recursive exhaustive list construction, its full specification, and termination for every sufficiently large rank; includes the concrete-code bridge and finite verifier |
 | [SparseListWeights](Klr/SparseListWeights.lean) | Direct average and rank-preserving small-weight selection for the actual executable list output, with no reverse conversion to abstract candidates |
+| [PoolQuery](Klr/PoolQuery.lean) | Actual query indicators on prescribed answer space, measurable coverage fractions, and finite-horizon L1 convergence |
+| [PoolWeakLimit](Klr/PoolWeakLimit.lean) | Simultaneous weak subsequences for countably many Hilbert unit-ball sequences, preserving scalar convergence and the L2 interval bounds |
+| [PoolPartitionQuery](Klr/PoolPartitionQuery.lean) | Actual fixed Borel partitions from query indicators, bounded representatives, high-miss convergence, and one rational low-set margin for any finite protected prefix |
+| [PoolWeighted](Klr/PoolWeighted.lean) | Actual weighted query probabilities, geometric truncation bounds, a limsup subsequence, and its preservation by the common weak-limit extraction |
+| [PoolApproximationFunction](Klr/PoolApproximationFunction.lean) | Borel-event approximation and rational finite-prefix L1 approximation, with a common depth and unit-interval table values |
+| [PoolAdviceMeasure](Klr/PoolAdviceMeasure.lean) | Exact identification of the three computable rational pool tests with actual fair-coin measures and integrals |
+| [PoolSelection](Klr/PoolSelection.lean) | Distinct finite selections satisfying arbitrary eventual side conditions and the centered-average bound `4/M + ε` |
+| [PoolAcceptance](Klr/PoolAcceptance.lean) | Actual accepted candidates at every sufficiently large pool size, from weak selection and finite-horizon convergence |
+| [PoolSoundness](Klr/PoolSoundness.lean) | Every accepted pool has the required high/low error bounds, using the final weighted-coverage gap and Markov's inequality |
+| [PoolConstruction](Klr/PoolConstruction.lean) | Complete Lemma 3: partitions chosen before stage parameters, rational margin and an ordinary program chosen before M, eventual halting, and exact missed-position bounds |
 | [AffineCode](Klr/AffineCode.lean) | Computable right-inverse verification and exact `2^-r` event measure, with [prefix checking](Klr/AffineCodePrefix.lean) and [coverage of every affine block](Klr/AffineCodeCoverage.lean) |
 | [SparseSearch](Klr/SparseSearch.lean) | Executable certificate-free full/restricted rank checks and partial-recursive certificate completion, with exact algebraic correctness and halting criteria |
 | [AffineDescription](Klr/AffineDescription.lean) | An actual binary program/input interpreter, uniformly c.e. affine cylinder enumeration, and a genuine Martin-Löf test with the proved plain-description budget |
@@ -113,6 +125,12 @@ The [sparse-candidate note](docs/sparse-candidates.md) follows the proof of
 Lemma 4 from uniform support and matrix counts through effective exhaustive
 search. The [affine-description note](docs/affine-descriptions.md) explains
 the concrete test, certificate completion, and program-length bounds.
+
+The [computable-pool note](docs/computable-pools.md) follows Lemma 3 from
+the fixed Borel partitions through finite advice, executable search,
+eventual halting, and soundness for every accepted pool. It records the
+precise quantifier order and the distinction between prescribed answer
+space and adaptive input-space transcripts.
 
 ## Build and proof checks
 
@@ -160,6 +178,7 @@ central results:
 #print axioms Klr.exists_separating_of_stage_estimates_and_descriptions
 #print axioms Klr.SparseCandidateList.eventually_exists_goodList
 #print axioms Klr.SparseListConstruction.eventually_construct_good
+#print axioms Klr.PoolConstruction.exists_fixed_partitions_computable_pools
 #print axioms Klr.AffineDescription.rePred_W
 #print axioms Klr.AffineDescription.per_program_bound
 #print axioms Klr.AffineProgramLength.eventually_programFor_pair_advice_length_budget
@@ -168,11 +187,12 @@ central results:
 
 ## What remains
 
-The major outstanding obligations are the computable pool lemma and the
-simultaneous stage construction, including reconstruction of the chosen
+The major outstanding obligation is the simultaneous stage construction,
+including reconstruction of the chosen
 horizons and syndromes by fixed-stage programs. The effective sparse-list
-construction, affine decoder, rank checks, and compiler length bounds are
-proved. These components still need to be combined to establish the actual
+construction, fixed-partition computable pool lemma, affine decoder, rank
+checks, and compiler length bounds are proved. These components still need
+to be combined to establish the actual
 stage estimates and short descriptions of the selected blocks.
 `exists_separating_of_stage_estimates_and_affine_programs` is a **conditional
 reduction** with precisely those remaining hypotheses. Uniform enumerability

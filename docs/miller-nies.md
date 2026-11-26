@@ -91,9 +91,9 @@ program code and its correctness is proved from the evaluator semantics.
 
 The decoded fraction is
 
-\[
+$$
  f(a)=\max\bigl(-1,\min(1,\operatorname{num}(a)/\operatorname{den}(a))\bigr).
-\]
+$$
 
 Division by zero uses the rational field convention and gives zero. Clipping
 makes every code output a legal wager, so even malformed programs produce
@@ -168,10 +168,10 @@ steps and cached replay have multiplier one.
 
 For source stage `n`, write
 
-\[
+$$
  C_0(n)=\prod_{i<n,\ q_i\text{ even}}(1+\epsilon_i f_i),\qquad
  C_1(n)=\prod_{i<n,\ q_i\text{ odd}}(1+\epsilon_i f_i),
-\]
+$$
 
 where `εᵢ` is `1` for a true answer and `-1` for a false answer.
 `reaches_source_capital` proves that each simulator reaches a stage with

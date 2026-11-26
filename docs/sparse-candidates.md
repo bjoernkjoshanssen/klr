@@ -17,9 +17,9 @@ Klr.SparseListConstruction.eventually_construct_good
 For every fixed positive real density `τ` and error tolerance `θ`, it proves
 that every sufficiently large natural `r` admits a list of
 
-\[
+$$
 J=M^3,\qquad M=r^8,\qquad m=r^2
-\]
+$$
 
 candidates. Each candidate has a support of exactly `m` positions in
 `Fin M` and an actual full-row-rank binary matrix with `r` rows and `m`
@@ -28,18 +28,18 @@ sampling argument.
 
 The list satisfies both requirements simultaneously:
 
-\[
+$$
 \#\{q<J:a\in S_q\}\le\frac{2m}{M}J
 \quad(a<M),
-\]
+$$
 
 and
 
-\[
+$$
 \#\{q<J:\operatorname{rank}(B_q|_{S_q\cap D})<r\}
 \le\theta J
 \quad\text{whenever }|D|\ge\tau M.
-\]
+$$
 
 The theorem does not assume the probability estimates or an asymptotic
 smallness condition: they are proved from finite counting and the displayed
@@ -62,23 +62,23 @@ probability distribution in the candidate argument.
 
 as the uniform support sample space. Exact binomial counts establish
 
-\[
+$$
 \Pr(a\in S)=\frac mM,\qquad
 \Pr(a,b\in S)=\frac{m(m-1)}{M(M-1)}\quad(a\ne b).
-\]
+$$
 
 For `N = |S ∩ D|`, the resulting first and second moments give
 
-\[
+$$
 \mu=\mathbb E N=\frac{m|D|}{M},\qquad
 \operatorname{Var}(N)\le\mu.
-\]
+$$
 
 Consequently, when `|D| ≥ τ M` and `4r ≤ τ m`,
 
-\[
+$$
 \Pr(N<2r)\le\frac4{\tau m}.
-\]
+$$
 
 The code's elementary size assumptions are `2 ≤ m ≤ M`. They hold in the
 eventual polynomial regime.
@@ -91,10 +91,10 @@ the evaluations on any selected column set `T` are uniformly distributed in
 `(ZMod 2)^T`. `RandomMatrix` therefore proves the exact annihilation probability
 `2^(-|T|)` and the union bound
 
-\[
+$$
 \Pr(B|_T\text{ loses full row rank})
 \le(2^r-1)2^{-|T|}.
-\]
+$$
 
 The full-rank matrices form an actual finite subtype. The proof identifies
 uniform probability on that subtype with ordinary conditional counting
@@ -102,43 +102,43 @@ probability. If `r+1 ≤ m`, the full-rank event has probability at least one
 half. Thus conditioning increases a failure probability by at most a factor
 of two; for `|T| ≥ 2r`, the conditional failure probability is at most
 
-\[
+$$
 2\cdot2^{-r}.
-\]
+$$
 
 `SparseCandidate` combines the support and full-rank matrix experiments as
 an independent product. A fixed enumeration of each support identifies
 matrix columns with pool positions. It proves that the number of selected
 columns is exactly `|S ∩ D|`, and obtains the actual marginal bounds
 
-\[
+$$
 \Pr(a\in S)=\frac mM,\qquad
 \Pr(\operatorname{BadRank}(D))
 \le\frac4{\tau m}+2\cdot2^{-r}.
-\]
+$$
 
 ## Concentration and all unread sets at once
 
 `SampleConcentration` proves the exact generating-function identity
 
-\[
+$$
 \mathbb E\,b^{\#\{q:z_q\in A\}}
 =\bigl(1+(b-1)\Pr(A)\bigr)^J.
-\]
+$$
 
 Finite Markov bounds then yield the following sufficient estimates:
 
-\[
+$$
 \Pr\bigl(\#\{q:z_q\in A\}>\theta J\bigr)
 \le e^{-\theta J/4}
 \quad\text{if }\Pr(A)\le\theta/4,
-\]
+$$
 
-\[
+$$
 \Pr\bigl(\#\{q:z_q\in A\}>2pJ\bigr)
 \le e^{-pJ/6}
 \quad\text{if }\Pr(A)\le p.
-\]
+$$
 
 The first uses base `2` and `log 2 ≥ 1/2`; the second uses base `3/2` and
 `log(3/2) ≥ 1/3`. These exponents are weaker than the paper's but sufficient
@@ -148,9 +148,9 @@ not a correction of the paper's concentration argument.
 The union runs over all `2^M` unread sets and all `M` pool positions. Using
 `2^M ≤ exp M`, its failure probability is at most
 
-\[
+$$
 e^{M-\theta J/4}+M e^{-mJ/(6M)}.
-\]
+$$
 
 `SparseParameters` proves that the single-candidate bound is eventually at
 most `θ/4` and that this total list-failure bound tends to zero. With
@@ -165,19 +165,19 @@ probability less than one has a successful outcome, giving the list.
 to the previously proved deterministic `Sparse` API. If `w(a) ≥ 0` and
 `∑ a, w(a)^2 ≤ C`, then
 
-\[
+$$
 \frac1J\sum_{q<J}\sum_{a\in S_q}w(a)
 \le\frac{2m}{M}\sqrt{MC}.
-\]
+$$
 
 If `J>0` and `θ<1`, the rank-preserving indices for any dense `D` number
 at least `(1-θ)J`. Restricting the average to those indices gives a candidate
 which both preserves rank on `D` and satisfies
 
-\[
+$$
 \sum_{a\in S_q}w(a)
 \le\frac{2m/M}{1-\theta}\sqrt{MC}.
-\]
+$$
 
 The direct wrapper is
 `exists_rank_good_small_weight_of_isGood`. The weight function is arbitrary;
@@ -248,5 +248,7 @@ The returned candidate data does not yet select a stage syndrome. Its
 certificate field is also unrestricted, since the direct rank verifier does
 not need a certificate. `SparseSearchCertificate` can subsequently compute
 a right inverse for any such full-row-rank matrix, preserving a supplied
-syndrome and the corresponding affine event. The computable pool lemma and
-the simultaneous stage construction remain separate obligations.
+syndrome and the corresponding affine event. The
+[computable pool lemma](computable-pools.md) is now also proved. Combining
+the two algorithms with the horizon, syndrome, and wager requirements
+remains part of the simultaneous stage construction.

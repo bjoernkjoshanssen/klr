@@ -18,9 +18,10 @@ Its conclusion is the intended
 ```
 
 but it has substantive construction hypotheses. There is no unconditional
-separation theorem yet. The effective sparse-list construction and concrete
-description test are proved; suitable pools and stage reconstruction programs
-still have to be constructed. None of these results is assumed as an axiom.
+separation theorem yet. The effective sparse-list construction, fixed-partition
+computable pool lemma, and concrete description test are proved. The stage
+selection and its reconstruction programs still have to be constructed.
+None of these results is assumed as an axiom.
 
 ## Indexing and the stage contract
 
@@ -29,9 +30,9 @@ Let `B : ℕ → AffineBlock` have pairwise disjoint supports. Write `P_n` for
 Thus `P_{j+1}` is the stage already imposing block `j`, and `P_j` is the stage
 immediately before it. Put
 
-\[
+$$
 e_j=2^{-j}/100.
-\]
+$$
 
 For each original strategy `s`, use its proved normalization. Write `π` for
 its scan and `h` for its signed wager function. The construction must supply
@@ -83,20 +84,20 @@ including the early-wager expectation. `LateDropBound` uses the first
 subsequent drop in the current or a later block, the Borel no-drop identity,
 and the `H/L` partition to obtain
 
-\[
+$$
 \rho(\text{a drop in block }j\text{ after }V_j)
 \le 4e_j+2e_j+e_j+\sum_{k>j}e_k=8e_j.
-\]
+$$
 
 The exact geometric tail identity and the finiteness of the `8e_j` and `4e_j`
 budget series are proved in `StageErrorBudget`.
 
 `EarlyLateWagers` then proves equation (11):
 
-\[
+$$
 \sum_{t:\,\text{query }t+1\text{ causes a rank drop}}|h(v_t)|<\infty
 \quad\rho\text{-almost surely}.
-\]
+$$
 
 For early drops this follows from finite total expected wager. For late
 drops, the first Borel–Cantelli lemma leaves only finitely many exceptional
@@ -131,10 +132,10 @@ on `(test level, plain program, input cylinder)`, together with:
 1. `REPred W`: one genuine c.e. predicate, uniformly in all three arguments.
 2. For every level `n` and program `p`,
 
-   \[
+   $$
    \lambda\!\left(\bigcup_{v:\,W(n,p,v)}[v]\right)
    \le 2^{-(2|p|+n+1)}.
-   \]
+   $$
 
 3. At every level `n`, some imposed block event `E_j` is contained in the
    cylinder union decoded from one program `p` at that level.
@@ -180,8 +181,11 @@ inputs supplied by the probabilistic argument.
 
 ## Remaining substantive work
 
-The proof still needs the computable pool lemma and the stage selection that
-supplies the estimates above together with the reconstruction programs.
+The proof still needs the stage selection that supplies the estimates above
+together with the reconstruction programs. The
+[computable-pool note](computable-pools.md) records the proved Lemma 3,
+including its fixed Borel partitions, finite advice, actual program, and
+eventual halting.
 The [sparse-candidate note](sparse-candidates.md) records the now proved
 Lemma 4, including its actual finite verifier and eventual termination of
 exhaustive search. Its output, the pool program, the horizon and syndrome

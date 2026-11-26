@@ -1,0 +1,28 @@
+name: Lean verification
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lean-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lean:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: leanprover/lean-action@ba3fdfe5c4476c925da13bf11a005ddb47e47aee
+        with:
+          build: "true"
+          use-mathlib-cache: "true"
+          axiom-audit: "true"
+          axiom-audit-root: "Klr"
+          axiom-audit-allow: "propext,Classical.choice,Quot.sound"

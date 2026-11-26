@@ -15,9 +15,7 @@ project:
     programs, and probability estimates are proved without construction premises.
   authors:
     - "Bjørn Kjos-Hanssen"
-  # Draft metadata only: the maintainer has not yet chosen a repository licence.
-  # Replace this value and add the matching full root LICENSE before preflight.
-  license: "LicenseRef-Pending"
+  license: "Apache-2.0"
   responsible_maintainers:
     - "Bjørn Kjos-Hanssen"
 
@@ -59,8 +57,8 @@ status:
     An equivalence with general partial computable-real capital presentations
     is not formalized. The development does not formalize unrelated results
     from the paper. No existing Palomar registration or completed human peer
-    review is claimed. The missing repository licence currently prevents a
-    complete Palomar preflight and submission.
+    review is claimed. Full Palomar verification and editorial review are
+    separate from the repository's build, axiom audit, and Comparator checks.
   # Counts concern proved development. The two deliberate Challenge theorem
   # holes are independent Comparator statement templates and are excluded.
   sorry_count: 0

@@ -142,8 +142,11 @@ The [Palomar preparation note](docs/palomar.md) describes the independent
 [Challenge](Challenge.lean), proved [Solution](Solution.lean), Comparator
 configuration, and provenance metadata. The two deliberate theorem holes in
 Challenge are isolated statement templates; they are not imported by the
-proved library. The full registry preflight and submission require a licence
-choice and matching root `LICENSE`. No Palomar registration is claimed.
+proved library. The full registry preflight verifies one exact public commit
+before submission. No Palomar registration is claimed.
+
+The repository is licensed under [Apache-2.0](LICENSE), as selected by its
+maintainer. Cited papers and external dependencies retain their own licences.
 
 The [finite-stage note](docs/finite-stage.md) explains the exact measure identity,
 how the adaptive transcript is represented, why the countable first-drop

@@ -81,19 +81,17 @@ the reusable workflow and its `pipeline_commit` to
 selected by the workflow event. A passing report from that complete workflow
 is required before requesting intake.
 
-## Licence decision still required
+## Licence
 
-The repository did not have a licence when this package was prepared.
-`project.license: LicenseRef-Pending` records that unresolved decision; it
-does not grant a licence and is not a registrable licence declaration.
+The maintainer selected Apache-2.0 for this repository. The complete text is
+in the root [LICENSE](../LICENSE), and `project.license` records the matching
+SPDX identifier `Apache-2.0`. Cited papers and external dependencies retain
+their own licences.
 
-Before running the full preflight, the maintainer must choose a licence,
-commit its complete text as the root `LICENSE`, and change `project.license`
-to the matching SPDX identifier. Palomar's starter uses Apache-2.0, which is
-also Mathlib's licence. The project has not automatically adopted that licence.
-
-The metadata-shape and source validators can pass while this decision is
-pending. Such results do not mean that the full Palomar preflight passed.
+The complete reusable preflight checks the licence together with the pinned
+source, metadata, statement, proof, and independent kernel verification.
+Successful metadata-shape or standalone Comparator checks alone do not mean
+that the full Palomar preflight passed.
 
 ## Submission handoff
 

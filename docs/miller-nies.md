@@ -202,9 +202,18 @@ source model.
 A proof of that bridge must control approximation errors over the whole
 run, including bets whose losing return is very small. Simply rounding each
 wager with a fixed absolute accuracy does not provide the required
-multiplicative capital comparison. A reserve together with suitably
-controlled rational approximations is a natural route, but that argument
-is not presently a theorem in these modules.
+multiplicative capital comparison.
+
+For **total** computable-real capital, that approximation step is now proved
+in `EffectiveNormalization`. It approximates the additive stakes of
+`(d+1)/2` with a geometric error budget. The resulting rational fair process
+stays within `1/4` of `(d+1)/2` on every transcript, is bounded below by
+`1/4`, and preserves unbounded success. `EffectiveNormalizationStrategy`
+then damps its wagers and proves the full total-strategy Lemma 2, including
+computability and success preservation. This supplies a proved ingredient
+for a possible partial-real bridge; it does not by itself define or
+totalize an arbitrary partial-real source. In particular, the approximation
+computations in that new construction are total on every finite transcript.
 
 Accordingly, the repository proves the explicit partial-rational to
 total-computable-real success-covering reduction and its KL-randomness

@@ -17,8 +17,10 @@ formalization tasks.
 The repository contains proved foundations and intermediate lemmas, rather
 than a theorem whose missing arguments are hidden in hypotheses or axioms.
 The README and individual module headers record the scope of each component.
-There is currently no Lean theorem asserting existence of a KL-random sequence
-that is not ML random.
+There is currently no unconditional Lean theorem asserting existence of a
+KL-random sequence that is not ML random. The final probabilistic reduction is
+checked, with the construction's concrete finite-stage estimates and effective
+description-cover obligations left explicit.
 
 ## Definitions and their verification
 
@@ -70,6 +72,23 @@ Success is **unboundedness** of capital, not convergence of capital to infinity.
 The distinction matters in the normalization argument. Ordinary increasing
 scans are included, and KL randomness implies computable randomness for these
 definitions.
+
+The standard implication **ML randomness ⇒ KL randomness** is now proved for
+these exact definitions. `MaximalInequality` gives
+
+\[
+\lambda\{X:\exists n,\ d(\operatorname{transcript}_\pi(X,n))>2^m\}\le 2^{-m}
+\]
+
+by a finite hitting-tree induction and a monotone limit. `EffectiveScan`
+turns a computable condition on finite adaptive transcripts into a uniformly
+c.e. union of input cylinders. For a rational approximation `q(v,0)` with
+error at most one, the test enumerates transcripts satisfying
+`q(v,0)>2^m+1`. Every such input crosses the capital threshold `2^m`, and
+unbounded capital eventually exceeds `2^m+2`, forcing membership in every
+test level. Thus even a fixed approximation precision suffices for this
+particular test. `MLImpliesKL` constructs the genuine `MartinLofTest` and
+proves the implication.
 
 The finite transcript law is proved directly. For a fixed transcript `v`, its
 queries form a fixed injective list of coordinates, even though the rule is
@@ -145,9 +164,16 @@ joint probability, and normalizing by the new syndrome's mass gives equality
 of old/new stage transcript probabilities. See the
 [finite-stage note](finite-stage.md) for the precise module interfaces.
 
-**Still required:** the conditional fair-or-forced answer law after partial
-rank loss. Compatibility cannot be omitted there: an impossible history has
-no conditional bit distribution of the intended kind.
+`AffineAnswer` now proves the conditional fair-or-forced answer law after
+**arbitrary partial rank loss**. On a positive-probability history satisfying
+the old equations, the new equations, and the transcript, a next query inside
+the new block is fair exactly when the remaining rank does not drop. If it
+drops, every compatible input has the same next bit, whose conditional
+probability is one. A query outside all conditioned blocks is fair.
+The proof constructs a kernel translation preserving both the history and
+the concrete fair-coin measure while swapping answer events in the fair case.
+Compatibility remains explicit: an impossible history has no conditional
+bit distribution of the intended kind.
 
 ### 2. Square-summable normalization — Lemma 2, pages 4–5
 
@@ -202,10 +228,38 @@ D_n=\prod_{t<n}\left(1+\frac{x_t}{2(1+\sum_{s<t}x_s^2)}\right)
 is unbounded. Here `x_t` is the signed return along a fixed transcript, so
 `x_t²=f_t²` and this is the same damping as in the paper.
 
-**Still required for the full strategy lemma:** connect the analytic sequence
-results to the computable strategy structures, construct the rational reserve
-approximation, and prove that the resulting scan/capital pair is a total
-computable strategy with the required success-set inclusion.
+The full effective strategy lemma is now proved in
+`EffectiveNormalization` and `EffectiveNormalizationStrategy`. The first
+module approximates the **additive stake** of `(d+1)/2` at a transcript `v`
+by
+
+\[
+\widetilde s(v)
+=\frac{q(v1,|v|+2)-q(v0,|v|+2)}4.
+\]
+
+It accumulates these signed rational stakes into a fair rational capital
+`r(v)`. The geometric error budget gives the uniform all-branch estimate
+
+\[
+\left|r(v)-\frac{d(v)+1}{2}\right|
+\le\frac14(1-2^{-|v|})\le\frac14.
+\]
+
+Consequently `r(v)≥1/4`, its wager fractions have absolute value strictly
+less than one, and success of `d` implies success of `r`. Approximating
+stakes this way preserves fairness exactly and controls accumulated error
+without a lower bound on the original capital.
+
+The second module applies the proved damping argument to this rational
+reserve process, explicitly proves computability of the rational folds and
+arithmetic, and constructs `s.normalize : BettingStrategy`. The scan is
+unchanged. On every input the normalized wagers have absolute value at most
+`1/2` and squared sum at most `1/2`; normalized capital stays positive; and
+`s.Succeeds X → s.normalize.Succeeds X` is proved. Selecting the approximation
+witness uses classical choice, but its computability is part of the original
+strategy and is proved for the resulting capital. No effective enumeration
+of all total strategies is assumed.
 
 ### 3. Computable pools — Lemma 3, pages 6–8
 
@@ -257,6 +311,14 @@ kind one might accidentally assume while encoding the construction. The paper
 does not require one: its list is non-effective, and a stage only uses finitely
 many actual program codes.
 
+`StrategyCountability` proves countability of the actual `BettingStrategy`
+type, including real-valued capital. It chooses program codes for the scan
+and one uniform rational approximating function. Equality of approximation
+functions implies equality of real capitals by the vanishing error bound.
+The resulting injection into a countable space of code data justifies the
+almost-everywhere interchange of quantifiers over **all** total strategies.
+It makes no claim that totality can be decided or effectively enumerated.
+
 For fixed stage `j`, the header includes the earlier constraints, relevant
 strategy programs, the pool program, and fixed stage parameters. Its size may
 be enormous and noncomputably dependent on `j`, but is independent of the trial
@@ -302,39 +364,128 @@ space when these equalities are used.
 
 The subsequent late-drop bounds are summable. Borel–Cantelli controls all but
 finitely many late blocks, while the early total wagers have finite expectation.
-On fair queries, square-summable increments give an `L²`-bounded martingale.
-Its convergence and the summable forced wagers bound log capital from above.
+The paper then uses square-summable increments and an `L²` martingale
+convergence theorem to bound capital. The formalization uses the simpler
+product argument described below for this final step.
 
 **Formal status:** finite-stage cylinder preservation and the first-rank-drop
 tail transfer are proved. The latter uses a prefix-free countable family of
 pre-drop transcripts and has no finite upper bound on the stopping time. The
 numerical remaining rank is proved nonincreasing, and the stopping event is
-proved equivalent to the first strict numerical rank decrease. The
-final infinite product law, the no-drop restriction equality for all Borel
-transcript events, the general conditional fair-or-forced answer law, and the
-final almost-sure boundedness argument remain.
+proved equivalent to the first strict numerical rank decrease.
+
+`NoDrop.nextStage_map_restrict_noDrop` now proves equation (10): equality
+of old/new transcript laws restricted to no rank drop ever. The proof passes
+from finite-horizon cylinder partitions to a decreasing intersection, then
+uses uniqueness on the cylinder-generated measurable structure. It handles
+all Borel transcript events and requires no positive mass of the no-drop
+event. The conditional fair-or-forced answer law is also proved, as described
+above.
+
+`PrefixStage` and `BlockProduct` now construct the actual infinite block
+measure. For every finite set of coordinates, the marginal is the stage law
+after all blocks meeting those coordinates have been imposed. Disjointness
+of supports proves that the marginal stabilizes, and the stabilized marginals
+are proved consistent. Mathlib's Kolmogorov extension theorem supplies the
+probability measure with exactly those marginals. The intersection of all
+block equations has measure one.
+
+The resulting cylinder comparison with a finite stage is proved under full
+unread rank of every later block. `FutureNoDrop` extends it to Borel transcript
+restrictions and the first subsequent rank-drop event for all blocks beyond
+a specified index. Its safety cutoff and comparison-stage cutoff are separate,
+so it directly handles the paper's event tracking the current block together
+with all later ones while comparing to the stage already imposing that block.
+`BlockProductAnswer` also transports the conditional fair-or-forced answer
+law to the actual infinite measure. Its child-cylinder mass statements include
+zero-mass histories.
+
+#### A simpler final boundedness argument
+
+`FairForced` factors normalized capital as
+
+\[
+D_n=F_nG_n,
+\]
+
+where `F_n` multiplies the usual return factor only at fair queries and `G_n`
+only at forced queries. Both products are nonnegative. The actual fair
+child-cylinder identity proves conservation of capital-weighted probability
+mass for `F`. A finite-tree maximal inequality and a limit therefore show that
+`F_n` is bounded almost surely. For the other factor,
+
+\[
+G_n\le\exp\!\left(\sum_{t<n,\ \text{forced}}|h_t|\right).
+\]
+
+Thus summability of the absolute forced wagers implies boundedness of `D_n`
+almost surely. This avoids a separate formalization of the `L²` martingale
+argument. It is an alternative proof of the same conclusion, not a correction
+to the paper. Square summability of normalized wagers is still needed upstream
+for the candidate-support wager estimate.
+
+`BlockRandomness` connects this result to the actual infinite block measure,
+success-preserving normalization, and countability of strategies. It proves
+almost-sure KL randomness from almost-sure forced-wager summability for each
+normalized strategy. It then proves conditional existence of a separating
+sequence if the common block solutions are covered by one genuine Martin-Löf
+test. A second interface derives that test from `DescriptionBudget`'s uniform
+c.e. description family and explicit per-description bounds.
+
+These are conditional reductions. They do not construct a block sequence
+satisfying the required wager estimates and short-description properties.
+
+#### From the finite-stage estimates to equation (11)
+
+That intermediate implication is also now proved. `StageEstimates` records
+the combined early-wager/partial-rank estimate (6), the first-drop bound (7),
+the `H`/no-drop estimate (8), the particular earlier-law instances of (9)
+needed for the later-block union bound, and all-branch horizon avoidance.
+These properties are only required beyond a strategy-dependent finite block
+index. Its Borel set `H` is fixed across those stages.
+
+`HorizonAvoidance` constructs the finite set of all queries made on all
+branches through a horizon. `HorizonLaw` transports finite-answer distributions
+and the actual early-wager expectation from the finite stage to `ρ`.
+`LateDropBound` proves the event decomposition giving
+
+\[
+\rho(\text{late drop in block }j)
+\le 7e_j+\sum_{k>j}e_k=8e_j.
+\]
+
+`StageErrorBudget` proves the exact dyadic tail identity and the summability
+of these bounds. `EarlyLateWagers` proves equation (11) from the two actual
+early/late estimates using Borel–Cantelli, finite expected early total, and
+freshness on each finite block. Finite initial exceptions are handled
+pathwise, without additional estimates.
+
+Consequently `ae_kolmogorovLovelandRandom_of_stage_estimates` proves
+almost-sure KL randomness under the actual constructed law, and
+`exists_separating_of_stage_estimates_and_descriptions` gives the separating
+sequence when the effective description contract is also supplied.
+The [stage-estimates note](stage-estimates.md) states all hypotheses, including
+the zero-based stage convention. The remaining task is their simultaneous
+construction; the code does not posit those witnesses as axioms.
 
 ## Suggested dependency order
 
-1. Finish the effective, strategy-level version of Lemma 2 and the standard
-   implication ML randomness ⇒ KL randomness. The definitions and transcript
-   law are now available.
-2. Extend the proved finite affine-block and first-rank-drop identities to
-   conditional answers after partial rank loss and to the no-drop restriction
-   equality on all Borel transcript events.
-3. Prove the probabilistic construction of sparse rank-preserving lists, using
+1. Prove the probabilistic construction of sparse rank-preserving lists, using
    the existing incidence/weight estimate downstream.
-4. Formalize the computable pool lemma, preserving the order of its
+2. Formalize the computable pool lemma, preserving the order of its
    non-effective finite choices and its effective search.
-5. Encode the stage construction and its actual descriptions, including the
-   reconstruction of horizons and syndromes.
-6. Construct the final measure and prove almost-sure KL randomness and support
-   inclusion in one ML test.
-7. Finish the separating-sequence theorem and the computable-real
-   rationalization bridge, then audit the axioms of the final theorem.
+3. Construct the effective affine decoder and rank filter used by the
+   description-budget test.
+4. Encode the stage construction and its actual descriptions, including the
+   reconstruction of horizons and syndromes, proving the `StageEstimates`
+   and description-cover contracts simultaneously.
+5. Apply the checked final reduction to those constructed witnesses and
+   audit the resulting unconditional theorem's axioms.
 
-The first two stages provide further independent checks of the probability and
-effectivity interfaces before undertaking the longest construction arguments.
+The effective normalization, infinite block law, no-drop and conditional
+answer identities, quantitative Section 6 reduction, and `MLR → KLR` check
+now provide the required downstream interfaces. A full partial-real source-model bridge can be
+treated separately; the paper's construction uses total strategies.
 
 ## Dependencies
 

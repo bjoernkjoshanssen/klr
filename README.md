@@ -4,9 +4,11 @@ A Lean formalization project investigating Chenghua Liu and Boning Meng,
 [*Separating Kolmogorov–Loveland randomness from Martin-Löf randomness*](https://arxiv.org/abs/2611.31004),
 version 1, 23 November 2026.
 
-**Status: foundations, finite-stage affine identities, first-rank-drop transfer,
-and two-strategy totalization for partial rational-wager programs are proved.
-The separation theorem is not yet formalized.** This repository does not assume the
+**Status: effective strategy normalization, the infinite affine-block law,
+conditional fair-or-forced answers, Borel no-drop identities, and `MLR → KLR`
+are proved. The stage estimates (6)–(9) are proved to imply almost-sure KL
+randomness under the constructed block law. The unconditional separation theorem is not yet
+proved.** This repository does not assume the
 paper's conclusion, its pool lemma, or its construction as axioms.
 
 The intended target is
@@ -20,8 +22,9 @@ The intended target is
 capital. The partial-program development implements Merkle's even/odd
 totalization for rational wagers, including cached-answer replay and an exact
 capital simulation. Its precise scope is recorded in the
-[Miller–Nies note](docs/miller-nies.md); the effective conversion from arbitrary
-computable-real capital to rational wagers remains a separate obligation.
+[Miller–Nies note](docs/miller-nies.md). Total computable-real strategies now
+have a proved success-preserving rational normalization. A general partial
+computable-real source interface and its conversion remain separate obligations.
 
 ## What is implemented
 
@@ -42,11 +45,32 @@ computable-real capital to rational wagers remains a separate obligation.
 | [AffineFamily](Klr/AffineFamily.lean) | Positive product probabilities for disjoint blocks and preservation of transcript probabilities after adding a full-unread-rank constraint |
 | [StoppingTranscript](Klr/StoppingTranscript.lean) | Prefix-free stopping transcripts, countable disjoint-union transfer, and preservation of unbounded first-rank-drop tails |
 | [RemainingRank](Klr/RemainingRank.lean) | Numerical remaining rank, its monotonicity, and exact identification of the stopping event with the first strict rank decrease |
+| [AffineAnswer](Klr/AffineAnswer.lean) | Conditional next-answer probabilities on compatible adaptive histories, including partial rank loss: fair iff no rank drop, otherwise forced; supported by [algebra](Klr/AffineAnswerAlgebra.lean) and [measure](Klr/AffineAnswerMeasure.lean) modules |
+| [NoDrop](Klr/NoDrop.lean) | Equality of old/new transcript measures restricted to no rank drop ever, for all Borel transcript events |
+| [PrefixStage](Klr/PrefixStage.lean) | Actual prefix stage laws, positive conditioning events, and finite-stage telescoping for full-rank transcripts and disjoint-coordinate events |
+| [BlockProduct](Klr/BlockProduct.lean) | An actual infinite probability law from proved coherent marginals, almost-sure satisfaction of every block, and exact infinite/finite transcript comparison |
+| [FutureNoDrop](Klr/FutureNoDrop.lean) | Infinite/finite Borel restriction identities and first-drop tails for all blocks beyond a specified index, with separate safety and comparison-stage cutoffs |
+| [BlockProductAnswer](Klr/BlockProductAnswer.lean) | Actual fair-or-forced next-bit laws under the infinite measure, including zero-mass histories in the child-cylinder identities |
 | [ComputableRational](Klr/ComputableRational.lean) | Canonical rational codes, primitive recursive arithmetic, and the bridge to uniformly computable real capital |
 | [PartialBetting](Klr/PartialBetting.lean) | A bounded-computation scheduler with primitive recursive fresh queries, cached answers, and liveness on every infinite partial source run |
 | [PartialBettingCapital](Klr/PartialBettingCapital.lean) | Fair parity-restricted capital, exact simulation of each parity factor, and success coverage for partial rational-wager programs |
 | [Normalization](Klr/Normalization.lean) | The finite telescoping estimate and the infinite bound `∑ h_t² ≤ 1/2` from Lemma 2 |
 | [NormalizationSuccess](Klr/NormalizationSuccess.lean) | The full analytic damping step: a positive reserve and unbounded original capital imply unbounded normalized capital |
+| [EffectiveNormalization](Klr/EffectiveNormalization.lean) | A computable rational fair approximation with reserve at least `1/4`, uniform additive error, and preserved success |
+| [EffectiveNormalizationStrategy](Klr/EffectiveNormalizationStrategy.lean) | Complete strategy-level Lemma 2: same scan, positive rational capital, success preservation, and `∑ wager² ≤ 1/2` on every input |
+| [EffectiveScan](Klr/EffectiveScan.lean) | Uniformly effective input events from computable conditions on adaptive transcripts |
+| [MaximalInequality](Klr/MaximalInequality.lean) | The actual fair-coin bound `λ{∃ n, capital(n) > 2^m} ≤ 2^-m` for every fresh scan |
+| [MLImpliesKL](Klr/MLImpliesKL.lean) | One genuine ML test covering each strategy's entire success set, and Martin-Löf randomness implying KL randomness |
+| [StrategyCountability](Klr/StrategyCountability.lean) | Countability of the actual total computable-real strategy type and the almost-everywhere quantifier interchange, without an effective enumeration assumption |
+| [FairForced](Klr/FairForced.lean) | Almost-sure bounded capital from fair child-cylinder probabilities and summable forced wagers, using a maximal inequality and exact product factorization |
+| [BlockRandomness](Klr/BlockRandomness.lean) | The actual block-law reduction to almost-sure KL randomness and conditional separation from a genuine ML-test cover; the construction obligations remain explicit |
+| [DropEvents](Klr/DropEvents.lean) | Actual per-block rank-drop events, measurability of finite-transcript functionals, and finitely many drops in every finite block |
+| [EarlyLateWagers](Klr/EarlyLateWagers.lean) | Equation (11) from summable late-drop probabilities and early-wager expectations, using Borel–Cantelli and handling arbitrary finite initial exceptions |
+| [HorizonAvoidance](Klr/HorizonAvoidance.lean) | Explicit finite enumeration of every query on every branch through a finite horizon, with full unread rank for supports avoiding those positions |
+| [HorizonLaw](Klr/HorizonLaw.lean) | Infinite/finite equality of finite-answer distributions and horizon-functional integrals, including the actual early-wager expectation |
+| [LateDropBound](Klr/LateDropBound.lean) | The actual infinite-law late-drop bound from the finite-stage partial-rank, first-drop, and Borel partition estimates |
+| [StageErrorBudget](Klr/StageErrorBudget.lean) | Exact dyadic tail sums and the paper's summable `8e_j` and `4e_j` bounds |
+| [StageEstimates](Klr/StageEstimates.lean) | An explicit contract for the unfinished construction, and a proved conditional chain from estimates (6)–(9) plus effective description cover to separation |
 | [DescriptionBudget](Klr/DescriptionBudget.lean) | The summation and measure budget for plain binary program descriptions, with a genuine ML test for any uniformly c.e. family satisfying those budgets |
 | [Sparse](Klr/Sparse.lean) | The finite incidence, Cauchy–Schwarz, and averaging estimates used to bound total wagers on candidate supports |
 
@@ -61,8 +85,13 @@ computability, and arithmetic developments are all contained in this repository
 or Mathlib.
 
 The [finite-stage note](docs/finite-stage.md) explains the exact measure identity,
-how the adaptive transcript is represented, and why the countable first-drop
-transfer has no finite stopping-time bound.
+how the adaptive transcript is represented, why the countable first-drop
+transfer has no finite stopping-time bound, and how no-drop equality extends
+from cylinders to all Borel transcript events.
+
+The [stage-estimates note](docs/stage-estimates.md) states the remaining
+construction hypotheses precisely and explains the complete checked reduction
+from those hypotheses to a separating sequence.
 
 ## Build and proof checks
 
@@ -92,21 +121,37 @@ central results:
 #print axioms Klr.AffineBlock.nextStageLaw_transcript
 #print axioms Klr.StoppingTranscript.finiteStage_rankDropTail_preserved
 #print axioms Klr.StoppingTranscript.nextStage_strictRankDropTail
+#print axioms Klr.AffineAnswer.stage_next_answer_fair_iff_no_rank_drop
+#print axioms Klr.NoDrop.nextStage_map_restrict_noDrop
+#print axioms Klr.BlockProduct.law_inputEvent_eq_of_fullRank
+#print axioms Klr.FutureNoDrop.law_firstDropAfter_of_le
+#print axioms Klr.BlockProductAnswer.child_mass_of_not_forced
 #print axioms Klr.PartialBetting.two_total_strategies_cover
 #print axioms Klr.tsum_normalizedWager_sq_le_half
 #print axioms Klr.normalization_preserves_unbounded_capital
+#print axioms Klr.BettingStrategy.normalize_preserves_success
+#print axioms Klr.BettingStrategy.normalize_wagers_tsum_le_half
+#print axioms Klr.MartinLofRandom.kolmogorovLovelandRandom
+#print axioms Klr.BettingStrategy.ae_not_succeeds_of_fair_forced
+#print axioms Klr.BlockRandomness.ae_kolmogorovLovelandRandom_of_forced_summable
+#print axioms Klr.EarlyLateWagers.ae_summable_forcedWager_of_bounds
+#print axioms Klr.StageEstimates.ae_summable_forcedWager
+#print axioms Klr.exists_separating_of_stage_estimates_and_descriptions
 ```
 
 ## What remains
 
-The major outstanding obligations are the effective normalization and
-rationalization of computable-real strategies, the conditional fair-or-forced
-answer law after partial rank loss, the computable pool lemma, existence of
-sparse rank-preserving candidate lists, the stage construction with explicit
-program-length bounds, and the final product-measure argument. Equality on all
-Borel transcript events restricted to no rank drop ever also remains. The
-standard implication ML randomness ⇒ KL randomness still needs to be connected
-to the definitions.
+The major outstanding obligations are the computable pool lemma, existence of
+sparse rank-preserving candidate lists, and the simultaneous stage construction
+with an effective affine decoder and explicit program-length bounds.
+`exists_separating_of_stage_estimates_and_descriptions` is a **conditional
+reduction**: the numerical `StageEstimates` and effective description-cover
+hypotheses still need to be supplied by that construction. Their implications
+for forced wagers, almost-sure KL randomness, and separation are proved.
+The full partial computable-real presentation also needs
+its own source-model bridge; this does not block working with the paper's
+total-strategy convention. Work is focused on dependencies of the separating
+sequence theorem, with `MLR → KLR` serving as a check of the definitions.
 
 The [audit and formalization roadmap](docs/paper-audit.md) explains which parts
 of the paper were checked informally, which components are already in Lean,

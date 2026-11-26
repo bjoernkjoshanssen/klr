@@ -11,9 +11,10 @@ There are `2^d` binary programs of length `d`. Consequently charging each
 program of length `d` a measure budget `2^(-(2*d+n+1))` gives a total budget
 `2^(-n)`. This uses all binary strings, with no prefix-free assumption.
 
-The measure-budget results are modular. They do not supply an interpreter
-for affine systems, an effective rank computation, or the description bounds
-for the systems chosen in Liu and Meng's construction.
+The measure-budget results are modular. `Klr.AffineDescription` instantiates
+them with a concrete interpreter and effective affine verifier. Descriptions
+of the particular systems chosen in Liu and Meng's construction still require
+the stage reconstruction algorithm and its advice bounds.
 -/
 
 @[expose] public section
@@ -92,7 +93,7 @@ theorem descriptionLevel_measure_le (W : ℕ × List Bool × List Bool → Prop)
   measure_iUnion_le_description_budget fairCoin _ n hbound
 
 /-- A uniformly c.e. family with these per-program budgets defines a genuine Martin-Löf test.
-Instantiating this with affine systems still requires a computable interpreter and rank filter. -/
+The concrete affine-system instance is supplied by `Klr.AffineDescription`. -/
 theorem exists_martinLofTest_of_description_family
     {W : ℕ × List Bool × List Bool → Prop} (hW : REPred W)
     (hbound : ∀ (n : ℕ) (p : List Bool),

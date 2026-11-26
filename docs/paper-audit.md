@@ -20,7 +20,9 @@ The README and individual module headers record the scope of each component.
 There is currently no unconditional Lean theorem asserting existence of a
 KL-random sequence that is not ML random. The final probabilistic reduction is
 checked, with the construction's concrete finite-stage estimates and effective
-description-cover obligations left explicit.
+program-reconstruction obligations left explicit. Lemma 4, including an actual
+effective exhaustive search and eventual halting, is now proved. The affine
+description test and its compiler bounds are also implemented.
 
 ## Definitions and their verification
 
@@ -290,19 +292,50 @@ over all `2^M` unread subsets as well as all pool positions. The conditioning
 on full row rank costs at most the stated factor of two for sufficiently large
 rank. No conflicting dependence on the unread set was found in the review.
 
-`Klr/Sparse.lean` proves the deterministic estimate used after such a list has
-been constructed. If a position appears in at most a fraction `δ` of the
-candidates, and the pool's nonnegative weights satisfy `∑ w_a² ≤ C`, then
+The probabilistic existence proof is now formalized. `UniformSupport`
+derives exact one- and two-point inclusion probabilities from binomial
+counts, then proves the intersection mean, variance bound, and small-support
+tail. `RandomMatrix` proves the exact annihilator probabilities and union
+bound over the `2^r−1` nonzero row functionals. Conditioning is on the actual
+finite subtype of full-row-rank matrices; its probability is proved at least
+one half when `r+1≤m`.
+
+`SparseCandidate` combines these into the actual per-candidate rank-failure
+bound `4/(τm)+2·2^-r`. `SampleConcentration` proves the generating-function
+identity for independent finite samples and exponential tails. The formal
+proof uses the sufficient exponents `−θJ/4` and `−mJ/(6M)`, in place of the
+paper's sharper logarithmic constants. `SparseParameters` proves all size
+conditions eventually hold for `M=r^8`, `m=r^2`, `J=M^3`, and that the complete
+failure bound tends to zero. Thus
+`SparseCandidateList.eventually_exists_goodList` proves existence for every
+sufficiently large rank, with no assumed probabilistic or asymptotic estimate.
+
+The effective conclusion is also proved. `SparseListSearch` verifies concrete
+Boolean support masks and padded matrix codes, using executable full and
+restricted rank checks. Its search enumerates ordinary codes, is partial
+recursive, and halts exactly when a good code exists. `SparseListCodeBridge`
+transfers the probabilistic witnesses to that exact code specification.
+`SparseListConstruction.eventually_construct_good` therefore proves eventual
+termination with a correct list. The proof does not assert that a classical
+choice of support enumeration is computable.
+
+`Klr/Sparse.lean` proves the deterministic estimate used downstream. If a
+position appears in at most a fraction `δ` of the candidates, and the pool's
+nonnegative weights satisfy `∑ w_a² ≤ C`, then
 
 \[
 \frac1J\sum_q\sum_{a\in S_q}w_a
 \le \delta\sqrt{M C}.
 \]
 
-This is double counting followed by Cauchy–Schwarz; it also yields a candidate
-no worse than the average. With the paper's parameters, it explains the
-decaying average total wager. It does **not** prove existence of a list having
-both sparsity and rank preservation. That probabilistic-method argument remains.
+This is double counting followed by Cauchy–Schwarz. `SparseCandidateWeights`
+connects it directly to the constructed list, and proves that restricting to
+the rank-preserving indices costs at most the factor `1/(1−θ)`. For each dense
+unread set, there is a rank-preserving candidate of support weight at most
+`(2m/M)/(1−θ) * sqrt(MC)`. See the
+[sparse-candidate note](sparse-candidates.md) for the precise proof chain and
+effective output representation. Applying these facts to the actual stage
+wagers remains part of the stage construction.
 
 ### 5. Short descriptions and advice — Section 5, pages 9–12
 
@@ -340,14 +373,34 @@ There are `2^d` descriptions of length `d`, and
 \sum_{p\in2^{<\omega}}2^{-2|p|-n-1}=2^{-n}.
 \]
 
-The budget module formalizes this counting and summation step, the resulting
-measure bound, and a genuine ML test obtained from any uniformly c.e. family of
-cylinder unions satisfying those per-description bounds. Its uniformity proof
-uses a formal dovetailing search for existential quantification over c.e.
-predicates. Supplying the actual affine-system decoder, proving its
-effectiveness, and deriving the stage-specific program-length bound are
-separate remaining obligations. A big-O annotation on a theorem statement
-would not discharge them.
+The budget module formalizes this counting and summation step.
+`AffineDescription` now instantiates it with an actual interpreter: a binary
+numeral is unpaired into a program index and numerical input, and Mathlib's
+partial-recursive evaluator runs that program. The decoded affine output is
+checked by a total computable right-inverse verifier, the rank threshold,
+and a finite-prefix checker. The resulting cylinder family is proved uniformly
+c.e., its per-program measure bound is proved, and it defines a genuine
+Martin-Löf test. Every existing finite-support `AffineBlock` is representable,
+by padding unused coordinates with zero columns.
+
+`SparseSearch` supplies certificate-free full and restricted rank algorithms
+and an actual partial-recursive right-inverse completion. The certificate is
+computed output; it need not be written literally into the binary description.
+`AffineProgramLength` proves that the concrete compiler satisfies
+
+\[
+|\operatorname{programFor}(e,n)|
+\le2\max\bigl(\operatorname{size}(\operatorname{encode}e),
+\operatorname{size}(n)\bigr).
+\]
+
+For a fixed program `e`, polynomially bounded numerical input and paired advice
+therefore satisfy `2|p|+level+1≤r` at every sufficiently large rank. These are
+actual length inequalities, not a big-O assumption. The remaining obligation
+is to supply the stage reconstruction algorithm and prove that its advice
+meets these bounds while its output gives the chosen syndrome and matrix.
+The [affine-description note](affine-descriptions.md) records the concrete
+representation and the final conditional theorem.
 
 ### 6. The final measure — Section 6, pages 12–14
 
@@ -463,28 +516,30 @@ pathwise, without additional estimates.
 Consequently `ae_kolmogorovLovelandRandom_of_stage_estimates` proves
 almost-sure KL randomness under the actual constructed law, and
 `exists_separating_of_stage_estimates_and_descriptions` gives the separating
-sequence when the effective description contract is also supplied.
+sequence when the effective description contract is also supplied. The newer
+`exists_separating_of_stage_estimates_and_affine_programs` instantiates that
+contract with the implemented interpreter; its remaining description
+hypothesis concerns actual successful programs and their lengths.
 The [stage-estimates note](stage-estimates.md) states all hypotheses, including
 the zero-based stage convention. The remaining task is their simultaneous
 construction; the code does not posit those witnesses as axioms.
 
 ## Suggested dependency order
 
-1. Prove the probabilistic construction of sparse rank-preserving lists, using
-   the existing incidence/weight estimate downstream.
-2. Formalize the computable pool lemma, preserving the order of its
+1. Formalize the computable pool lemma, preserving the order of its
    non-effective finite choices and its effective search.
-3. Construct the effective affine decoder and rank filter used by the
-   description-budget test.
-4. Encode the stage construction and its actual descriptions, including the
+2. Apply the effective sparse-list construction and support-weight estimates
+   to the actual finite-stage measures and normalized wagers.
+3. Encode the stage construction and its actual descriptions, including the
    reconstruction of horizons and syndromes, proving the `StageEstimates`
-   and description-cover contracts simultaneously.
-5. Apply the checked final reduction to those constructed witnesses and
+   and successful short-program contracts simultaneously.
+4. Apply the checked final reduction to those constructed witnesses and
    audit the resulting unconditional theorem's axioms.
 
 The effective normalization, infinite block law, no-drop and conditional
-answer identities, quantitative Section 6 reduction, and `MLR → KLR` check
-now provide the required downstream interfaces. A full partial-real source-model bridge can be
+answer identities, effective Lemma 4, concrete affine-description test,
+quantitative Section 6 reduction, and `MLR → KLR` check now provide the
+required downstream interfaces. A full partial-real source-model bridge can be
 treated separately; the paper's construction uses total strategies.
 
 ## Dependencies

@@ -7,7 +7,7 @@ meeting its hypotheses. This note states that boundary precisely.
 The main conditional theorem is
 
 ```lean
-Klr.exists_separating_of_stage_estimates_and_descriptions
+Klr.exists_separating_of_stage_estimates_and_affine_programs
 ```
 
 Its conclusion is the intended
@@ -18,8 +18,9 @@ Its conclusion is the intended
 ```
 
 but it has substantive construction hypotheses. There is no unconditional
-separation theorem yet, and no existence of suitable pools, candidate lists,
-or short descriptions is assumed as an axiom.
+separation theorem yet. The effective sparse-list construction and concrete
+description test are proved; suitable pools and stage reconstruction programs
+still have to be constructed. None of these results is assumed as an axiom.
 
 ## Indexing and the stage contract
 
@@ -117,15 +118,15 @@ convergence argument. It proves the same required boundedness conclusion.
 The square-sum estimate remains necessary for the earlier candidate-support
 wager bound.
 
-## The effective description obligation
+## The concrete description test and the remaining programs
 
-To obtain non-ML randomness, the final theorem takes one predicate
+The original modular reduction took a predicate
 
 ```lean
 W : ℕ × List Bool × List Bool → Prop
 ```
 
-on `(test level, plain program, input cylinder)`. It requires:
+on `(test level, plain program, input cylinder)`, together with:
 
 1. `REPred W`: one genuine c.e. predicate, uniformly in all three arguments.
 2. For every level `n` and program `p`,
@@ -139,21 +140,51 @@ on `(test level, plain program, input cylinder)`. It requires:
    cylinder union decoded from one program `p` at that level.
 
 `DescriptionBudget` proves the exact sum over all plain programs and builds
-a genuine ML test from these data. Every input satisfying all block equations
-fails that test. Since the block intersection has `ρ`-measure one, it meets
-the set of KL-random inputs supplied by the probabilistic argument.
+a genuine ML test from these data. `AffineDescription` now supplies a concrete
+`W`, with its uniform c.e. property and per-program bounds proved. A binary
+description designates an actual partial-recursive program and a natural
+input. The output is finite affine data, checked by a computable right-inverse
+verifier and a rank threshold. Accepted prefixes enumerate exactly the
+decoded affine event, whose measure is exactly `2^-r`.
 
-The affine decoder, effective rank filter, and the stage-specific short
-programs have not been constructed. In particular, the bound
-`r_j ≥ 2|p_j| + j + 1` must follow from actual descriptions reconstructing the
-chosen syndrome. It cannot be replaced by a big-O assertion or by writing
-the syndrome literally into the program.
+Consequently the new final theorem takes only the following concrete
+description obligation in addition to the stage estimates:
+
+```lean
+∀ n : ℕ, ∃ (j : ℕ) (p : List Bool) (c : AffineCode.Data),
+  c ∈ AffineDescription.run p ∧ AffineCode.valid c = true ∧
+  2 * p.length + n + 1 ≤ AffineCode.rank c ∧
+  (B j).event ⊆ AffineCode.event c
+```
+
+An exact-event wrapper replaces the last inclusion with equality. Every
+existing `AffineBlock` is proved to have a valid finite code and some binary
+program producing it. That coverage theorem does not assert shortness.
+
+`AffineProgramLength` separately proves explicit bounds for the actual
+compiler. A fixed program with polynomially bounded numerical input, or
+paired rank/advice input, eventually meets `2|p|+n+1 ≤ r` at each fixed test
+level. `SparseSearch` supplies an actual partial-recursive completion of a
+right-inverse certificate, halting precisely on full-row-rank systems and
+preserving their affine events.
+
+The remaining task is to write the stage reconstruction algorithm, prove it
+computes the chosen matrix and syndrome, and show its input/advice obey the
+proved length bounds. Writing the syndrome literally still costs `r` bits
+and does not meet the desired budget. The
+[affine-description note](affine-descriptions.md) records the concrete APIs.
+
+Every input satisfying all block equations then fails the constructed test.
+Since the block intersection has `ρ`-measure one, it meets the set of KL-random
+inputs supplied by the probabilistic argument.
 
 ## Remaining substantive work
 
-The proof still needs the computable pool lemma, the existence and effective
-search for sparse rank-preserving candidate lists, and the stage selection
-that supplies the estimates above together with short descriptions. Those
-components must be made compatible in a single construction. The checked
-reduction isolates their exact output requirements; it does not reduce their
-mathematical difficulty to a routine final invocation.
+The proof still needs the computable pool lemma and the stage selection that
+supplies the estimates above together with the reconstruction programs.
+The [sparse-candidate note](sparse-candidates.md) records the now proved
+Lemma 4, including its actual finite verifier and eventual termination of
+exhaustive search. Its output, the pool program, the horizon and syndrome
+choices, and the compiler bounds must be made compatible in one construction.
+The checked reduction isolates their exact output requirements; it does not
+reduce their mathematical difficulty to a routine final invocation.

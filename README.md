@@ -6,9 +6,12 @@ version 1, 23 November 2026.
 
 **Status: effective strategy normalization, the infinite affine-block law,
 conditional fair-or-forced answers, Borel no-drop identities, and `MLR → KLR`
-are proved. The stage estimates (6)–(9) are proved to imply almost-sure KL
-randomness under the constructed block law. The unconditional separation theorem is not yet
-proved.** This repository does not assume the
+are proved. Lemma 4 now has a proved probabilistic existence argument and an
+actual partial-recursive list search that halts at every sufficiently large
+rank. A concrete affine-description Martin-Löf test and explicit binary
+program-length bounds are also proved. The stage estimates (6)–(9) imply
+almost-sure KL randomness under the constructed block law. The unconditional
+separation theorem is not yet proved.** This repository does not assume the
 paper's conclusion, its pool lemma, or its construction as axioms.
 
 The intended target is
@@ -73,6 +76,19 @@ computable-real source interface and its conversion remain separate obligations.
 | [StageEstimates](Klr/StageEstimates.lean) | An explicit contract for the unfinished construction, and a proved conditional chain from estimates (6)–(9) plus effective description cover to separation |
 | [DescriptionBudget](Klr/DescriptionBudget.lean) | The summation and measure budget for plain binary program descriptions, with a genuine ML test for any uniformly c.e. family satisfying those budgets |
 | [Sparse](Klr/Sparse.lean) | The finite incidence, Cauchy–Schwarz, and averaging estimates used to bound total wagers on candidate supports |
+| [FiniteProbability](Klr/FiniteProbability.lean) | Actual uniform finite counting probabilities, expectations, product-sample independence, and Markov/union bounds |
+| [UniformSupport](Klr/UniformSupport.lean) | Exact inclusion probabilities, intersection mean and variance, and the small-intersection tail, from [binomial counts](Klr/UniformSupportCount.lean) |
+| [RandomMatrix](Klr/RandomMatrix.lean) | Exact annihilator probabilities, restricted rank-failure bounds, and uniform conditioning on full row rank, supported by [linear algebra](Klr/RandomMatrixAlgebra.lean) |
+| [SampleConcentration](Klr/SampleConcentration.lean) | Exact count-generating functions, exponential tails, and simultaneous finite sampling bounds |
+| [SparseCandidateList](Klr/SparseCandidateList.lean) | Lemma 4's eventual list existence, combining the [actual candidate experiment](Klr/SparseCandidate.lean) and proved [polynomial parameter bounds](Klr/SparseParameters.lean) |
+| [SparseCandidateWeights](Klr/SparseCandidateWeights.lean) | The list's incidence-to-weight bridge and a rank-preserving candidate with support weight at most `(2m/M)/(1−θ) * sqrt(MC)` |
+| [SparseListConstruction](Klr/SparseListConstruction.lean) | Actual partial-recursive exhaustive list construction, its full specification, and termination for every sufficiently large rank; includes the concrete-code bridge and finite verifier |
+| [SparseListWeights](Klr/SparseListWeights.lean) | Direct average and rank-preserving small-weight selection for the actual executable list output, with no reverse conversion to abstract candidates |
+| [AffineCode](Klr/AffineCode.lean) | Computable right-inverse verification and exact `2^-r` event measure, with [prefix checking](Klr/AffineCodePrefix.lean) and [coverage of every affine block](Klr/AffineCodeCoverage.lean) |
+| [SparseSearch](Klr/SparseSearch.lean) | Executable certificate-free full/restricted rank checks and partial-recursive certificate completion, with exact algebraic correctness and halting criteria |
+| [AffineDescription](Klr/AffineDescription.lean) | An actual binary program/input interpreter, uniformly c.e. affine cylinder enumeration, and a genuine Martin-Löf test with the proved plain-description budget |
+| [AffineProgramLength](Klr/AffineProgramLength.lean) | Explicit compiler length bounds and eventual rank budgets for polynomially bounded input and paired advice |
+| [AffineDescriptionSeparation](Klr/AffineDescriptionSeparation.lean) | Final conditional separation using the implemented interpreter; only stage estimates and actual sufficiently short reconstruction programs remain hypotheses |
 
 These definitions enforce **uniform** effectiveness. It would be incorrect to
 define a Martin-Löf test merely by requiring each level separately to be
@@ -92,6 +108,11 @@ from cylinders to all Borel transcript events.
 The [stage-estimates note](docs/stage-estimates.md) states the remaining
 construction hypotheses precisely and explains the complete checked reduction
 from those hypotheses to a separating sequence.
+
+The [sparse-candidate note](docs/sparse-candidates.md) follows the proof of
+Lemma 4 from uniform support and matrix counts through effective exhaustive
+search. The [affine-description note](docs/affine-descriptions.md) explains
+the concrete test, certificate completion, and program-length bounds.
 
 ## Build and proof checks
 
@@ -137,17 +158,26 @@ central results:
 #print axioms Klr.EarlyLateWagers.ae_summable_forcedWager_of_bounds
 #print axioms Klr.StageEstimates.ae_summable_forcedWager
 #print axioms Klr.exists_separating_of_stage_estimates_and_descriptions
+#print axioms Klr.SparseCandidateList.eventually_exists_goodList
+#print axioms Klr.SparseListConstruction.eventually_construct_good
+#print axioms Klr.AffineDescription.rePred_W
+#print axioms Klr.AffineDescription.per_program_bound
+#print axioms Klr.AffineProgramLength.eventually_programFor_pair_advice_length_budget
+#print axioms Klr.exists_separating_of_stage_estimates_and_affine_programs
 ```
 
 ## What remains
 
-The major outstanding obligations are the computable pool lemma, existence of
-sparse rank-preserving candidate lists, and the simultaneous stage construction
-with an effective affine decoder and explicit program-length bounds.
-`exists_separating_of_stage_estimates_and_descriptions` is a **conditional
-reduction**: the numerical `StageEstimates` and effective description-cover
-hypotheses still need to be supplied by that construction. Their implications
-for forced wagers, almost-sure KL randomness, and separation are proved.
+The major outstanding obligations are the computable pool lemma and the
+simultaneous stage construction, including reconstruction of the chosen
+horizons and syndromes by fixed-stage programs. The effective sparse-list
+construction, affine decoder, rank checks, and compiler length bounds are
+proved. These components still need to be combined to establish the actual
+stage estimates and short descriptions of the selected blocks.
+`exists_separating_of_stage_estimates_and_affine_programs` is a **conditional
+reduction** with precisely those remaining hypotheses. Uniform enumerability
+and the per-description measure bounds are discharged by the implemented
+interpreter. The older generic description-family interface remains available.
 The full partial computable-real presentation also needs
 its own source-model bridge; this does not block working with the paper's
 total-strategy convention. Work is focused on dependencies of the separating

@@ -37,3 +37,9 @@ public import Klr.StageErrorBudget
 public import Klr.StageEstimates
 public import Klr.DescriptionBudget
 public import Klr.Sparse
+public import Klr.SparseCandidateWeights
+public import Klr.AffineDescriptionSeparation
+public import Klr.AffineProgramLength
+public import Klr.SparseSearch
+public import Klr.SparseListConstruction
+public import Klr.SparseListWeights

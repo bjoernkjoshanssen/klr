@@ -31,6 +31,38 @@ Thus the completed theorem should be read with this explicit convention; it
 does not silently claim an additional equivalence with every partial-real
 presentation of KL randomness.
 
+## Base-four non-invariance
+
+The repository also proves that **base-four KL randomness does not imply
+binary KL randomness** under the canonical grouping of adjacent bits, using
+the same total computable-real convention in both bases:
+
+```lean
+∃ X : Klr.Cantor,
+  Klr.BaseFour.KolmogorovLovelandRandom (Klr.BaseFour.pairDigits X) ∧
+  ¬Klr.KolmogorovLovelandRandom X
+```
+
+The entry point is
+[`Klr.exists_baseFour_random_not_binary_random`](Klr/BaseInvariance.lean).
+The converse implication is proved, giving the proper-inclusion theorem
+`Klr.binary_random_ssubset_baseFour_random`. Four-symbol strategies are
+defined explicitly, with freshness, uniform computability of real capital,
+and four-way fairness. The theorem is stated on digit streams and their
+canonical grouping.
+
+The construction defeats every pair-respecting binary strategy while making
+both coordinate halves non-ML-random. The separately proved theorem
+[`Klr.kolmogorovLovelandRandom_even_or_odd`](Klr/Splitting.lean)
+then rules out binary KL randomness. This even/odd instance of the
+Merkle–Miller–Nies–Reimann–Stephan splitting theorem uses a concrete rational
+source program and the existing totalization theorem.
+
+The [base-four note](docs/base-four.md) explains the shared Borel partitions,
+parity-confined stage construction, and two projected ML tests. Those tests
+retain the original description programs, avoiding an additional compiler
+length assumption for the repository's interpreter.
+
 ## The completed construction
 
 The fixed Borel partitions from Lemma 3 are chosen before any stages. At each
@@ -136,14 +168,16 @@ The only direct library dependency is **Mathlib**. The probability,
 computability, and arithmetic developments are all contained in this repository
 or Mathlib.
 
-## Palomar entry preparation
+## Palomar registration
 
 The [Palomar preparation note](docs/palomar.md) describes the independent
 [Challenge](Challenge.lean), proved [Solution](Solution.lean), Comparator
 configuration, and provenance metadata. The two deliberate theorem holes in
 Challenge are isolated statement templates; they are not imported by the
-proved library. The full registry preflight verifies one exact public commit
-before submission. No Palomar registration is claimed.
+proved library. The original separation package at commit
+`df2df6c088fbc29abf5ff1ea40f8fa123ca55d7b` is registered as
+[PALOMAR-2026-11-26-000060, version 1](https://palomar-registry.org/entry.html?id=PALOMAR-2026-11-26-000060&version=1).
+That registered version predates the base-four extension.
 
 The repository is licensed under [Apache-2.0](LICENSE), as selected by its
 maintainer. Cited papers and external dependencies retain their own licences.
@@ -223,6 +257,10 @@ central results:
 #print axioms Klr.StageConstruction.exists_sequence
 #print axioms Klr.exists_kolmogorovLovelandRandom_not_martinLofRandom
 #print axioms Klr.martinLofRandom_ssubset_kolmogorovLovelandRandom
+#print axioms Klr.BaseFour.kolmogorovLovelandRandom_pairDigits_iff
+#print axioms Klr.kolmogorovLovelandRandom_even_or_odd
+#print axioms Klr.exists_baseFour_random_not_binary_random
+#print axioms Klr.binary_random_ssubset_baseFour_random
 ```
 
 ## Scope and further work

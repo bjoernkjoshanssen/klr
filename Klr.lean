@@ -45,3 +45,4 @@ public import Klr.SparseListConstruction
 public import Klr.SparseListWeights
 public import Klr.PoolConstruction
 public import Klr.Separation
+public import Klr.BaseInvariance

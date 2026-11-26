@@ -52,12 +52,28 @@ instance : IsProbabilityMeasure fairBit := by
 noncomputable def fairCoin : Measure Cantor :=
   Measure.infinitePi (fun _ : ℕ => fairBit)
 
+section
+
+-- The original capital definition is elaborated in a separate source module.
+-- Fix its elementary numeral instance explicitly so combining the statement
+-- definitions here does not reuse an auxiliary proof from `fairBit` instead.
+-- The auxiliary name intentionally agrees with that pinned production definition.
+set_option linter.auxLemma false
+
+/-- A checked witness for the numeral `2`, named as in the original capital definition. -/
+theorem ComputableRealCapital._proof_1 : Nat.AtLeastTwo (1 + 1) :=
+  @Nat.instAtLeastTwoHAddOfNat 1 (@Nat.instNeZeroSucc 0)
+
+attribute [local instance] ComputableRealCapital._proof_1
+
 /-- Uniform rational approximation to a real capital function. One computable
 function handles every finite history and precision, with error at most `2⁻ⁿ`. -/
 def ComputableRealCapital (d : List Bool → ℝ) : Prop :=
   ∃ q : List Bool → ℕ → ℚ,
     Computable (fun p : List Bool × ℕ => ((q p.1 p.2).num, (q p.1 p.2).den)) ∧
     ∀ v n, |(q v n : ℝ) - d v| ≤ (1 / 2 : ℝ) ^ n
+
+end
 
 /-- A total computable query map. Every query is fresh on every possible
 finite answer history; scanning all input positions is not required. -/

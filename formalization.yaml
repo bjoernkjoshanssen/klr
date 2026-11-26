@@ -1,0 +1,147 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Kolmogorov–Loveland and Martin-Löf randomness"
+  description: >-
+    A Mathlib-only Lean formalization of Liu and Meng's separation argument.
+    There exists an infinite binary sequence on which every total computable
+    adaptive betting strategy with uniformly computable-real, nonnegative,
+    fair capital has bounded capital, while the sequence fails a Martin-Löf
+    test for the fair-coin measure. Each strategy queries distinct positions
+    along every possible answer history. Martin-Löf randomness also implies
+    randomness for this strategy convention, so the inclusion is proper.
+    The actual simultaneous affine-block construction, short reconstruction
+    programs, and probability estimates are proved without construction premises.
+  authors:
+    - "Bjørn Kjos-Hanssen"
+  # Draft metadata only: the maintainer has not yet chosen a repository licence.
+  # Replace this value and add the matching full root LICENSE before preflight.
+  license: "LicenseRef-Pending"
+  responsible_maintainers:
+    - "Bjørn Kjos-Hanssen"
+
+classification:
+  arxiv: ["math.LO"]
+  msc2020: ["03D32", "03B35"]
+
+sources:
+  - title: "Separating Kolmogorov–Loveland randomness from Martin-Löf randomness"
+    authors:
+      - "Chenghua Liu"
+      - "Boning Meng"
+    id: "arXiv:2611.31004v1"
+    type: "paper"
+    location: "https://arxiv.org/abs/2611.31004v1"
+    relationship: "formalizes"
+    note: >-
+      The project formalizes the separation argument from version 1, dated
+      23 November 2026, for the explicitly defined total computable-real
+      strategy convention. Proof adaptations and the separate partial-real
+      source-model issue are documented below and in docs/paper-audit.md.
+      No source-author participation or endorsement is documented in this
+      development; bibliographic authorship does not imply such endorsement.
+    author_endorsement: "other"
+
+related_formalizations: []
+
+status:
+  scope: >-
+    The compared declarations prove existence of a sequence that is
+    Kolmogorov–Loveland random but not Martin-Löf random, and proper inclusion
+    of the Martin-Löf random class. KL strategies have total computable fresh
+    query maps and uniformly computable-real nonnegative fair capital;
+    success means unbounded capital. ML randomness quantifies over all
+    uniformly c.e. open tests with the usual fair-coin measure bounds.
+    The development separately proves that its random sequences defeat all
+    infinite fresh runs of partial rational-wager programs. The latter is a
+    supplementary result, not a compared declaration in this entry.
+    An equivalence with general partial computable-real capital presentations
+    is not formalized. The development does not formalize unrelated results
+    from the paper. No existing Palomar registration or completed human peer
+    review is claimed. The missing repository licence currently prevents a
+    complete Palomar preflight and submission.
+  # Counts concern proved development. The two deliberate Challenge theorem
+  # holes are independent Comparator statement templates and are excluded.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Classical.choice", "Quot.sound"]
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["GPT-6 Astra Pro"]
+      framework: "ChatGPT with parallel coding and mathematical-review agents"
+      tool_setup: >-
+        Lean 4.36.0, Mathlib 4.36.0, shell and GitHub tools, Lean tactics,
+        project-wide axiom-audit, and the toolchain's Comparator and
+        independent proof checkers. Agents developed proofs, compiled them,
+        and reviewed definitions, quantifier order, and theorem interfaces.
+      cost:
+        wall_time: "Not tracked; development spanned several interactive sessions."
+        spend_usd: "Subscription-based; task-specific spend not tracked."
+        hardware: "Hosted Linux execution environment."
+      prompting_notes: >-
+        The human maintainer requested a Mathlib-only formalization and audit
+        of the claimed KL/ML separation, directed attention to dependencies
+        of the separation theorem, and reviewed successive progress reports.
+        Agents were required to retain explicit assumptions until discharged
+        and to avoid proof admissions or additional axioms in the development.
+  spend_usd: "Not tracked."
+  notes: >-
+    Bjørn Kjos-Hanssen supplied research direction, mathematical feedback,
+    repository maintenance, and approval of the completed proof merge.
+    AI agents generated and revised the Lean development and documentation.
+    GPT-6 Astra Pro is the recorded model for the completion and registry
+    preparation; exact per-turn model identifiers for every earlier session
+    were not separately logged. Agents are disclosed here rather than listed
+    as human project authors.
+
+fidelity:
+  divergences: >-
+    The KL convention is stated explicitly rather than identified with every
+    partial computable-real presentation. The pool proof uses a Hilbert-space
+    weak compactness route and a sufficient finite averaging constant. The
+    stage syndrome minimizes truncated total support wagers, which dominate
+    early rank-drop wagers and preserve the required budget. Certified output
+    is reconstructed by exhaustive finite truth-table comparison. The final
+    boundedness argument uses a fair/forced product factorization and a
+    maximal inequality. These proof adaptations establish the stated theorem
+    without an additional mathematical hypothesis. No substantive correction
+    to the source's stage argument was identified.
+
+review:
+  status: "agent-reviewed"
+  reviewers: []
+  notes: >-
+    Related AI agents reviewed the actual randomness definitions, uniform
+    computability, normalization, positive conditioning laws, fixed-program
+    quantifier order, computed syndrome, earlier-law indices, and global
+    horizon preservation. The completed proof was built and axiom-audited
+    locally and in GitHub Actions. The human maintainer reviewed progress
+    and approved merging the result. These checks are not independent human
+    peer review and do not constitute Palomar acceptance or registration.
+
+alignment:
+  namespace: "PalomarKlr"
+  statements:
+    - source: "Liu–Meng, main separation theorem, with the stated total-strategy convention"
+      lean: "PalomarKlr.separation"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        A wrapper around Klr.exists_kolmogorovLovelandRandom_not_martinLofRandom.
+        Challenge independently fixes every project definition reached by its
+        statement; Solution imports the actual completed proof.
+    - source: "Main separation together with Martin-Löf randomness implying KL randomness"
+      lean: "PalomarKlr.strict_inclusion"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        A wrapper around Klr.martinLofRandom_ssubset_kolmogorovLovelandRandom.
+        No construction, oracle, description, or effectiveness premise is supplied.
+
+acknowledgements: >-
+  The mathematical separation argument is due to Chenghua Liu and Boning Meng.
+  This project uses Lean and Mathlib and acknowledges their contributors.
+  The standard logical axioms are propext, Classical.choice, and Quot.sound.

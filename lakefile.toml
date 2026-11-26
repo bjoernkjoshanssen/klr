@@ -1,6 +1,6 @@
 name = "klr"
 version = "0.1.0"
-keywords = ["math"]
+keywords = ["math", "computability", "algorithmic-randomness", "probability"]
 defaultTargets = ["Klr"]
 
 [leanOptions]
@@ -18,3 +18,11 @@ rev = "v4.36.0"
 
 [[lean_lib]]
 name = "Klr"
+
+# Palomar checks these in separate environments. Challenge contains only the
+# independent statement templates and is never imported by the proved library.
+[[lean_lib]]
+name = "Challenge"
+
+[[lean_lib]]
+name = "Solution"

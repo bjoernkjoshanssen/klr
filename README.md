@@ -63,6 +63,28 @@ parity-confined stage construction, and two projected ML tests. Those tests
 retain the original description programs, avoiding an additional compiler
 length assumption for the repository's interpreter.
 
+## Oracle computation and jump foundations
+
+[`Klr.Computability`](Klr/Computability.lean) provides the foundations for
+investigating a fourth-jump computable separating measure and a separating
+sequence computable in the fifth jump. These degree bounds are **not yet proved**.
+
+The development uses Mathlib's actual `RecursiveIn` relation. It includes an
+oracle-program interpreter and its soundness and completeness, finite oracle
+simulations, the relative halting jump, jump monotonicity and strictness, and
+the arithmetical-hierarchy upper bound: a relative Sigma or Pi predicate at
+level `n` is decidable in the `n`-fold jump. A total relative Sigma-one relation
+has a selector computable in the same oracle.
+
+The stage-search interface permits nonunique witnesses and searches that
+diverge on malformed histories. An arbitrary semantic invariant and an
+existence proof on valid histories suffice to obtain a total run computable
+in the original oracle. The invariant need not itself be decidable.
+
+The [oracle and jump note](docs/oracle-jump.md) records the exact theorem
+interfaces, the extracted `tt-auto` sources, and the remaining effective
+partition and measure arguments. Mathlib remains the only external dependency.
+
 ## The completed construction
 
 The fixed Borel partitions from Lemma 3 are chosen before any stages. At each

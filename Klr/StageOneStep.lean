@@ -103,6 +103,19 @@ theorem result_of_prepared
     event_eq := hevent
     budget := P.program_budget b ?_
     support_subset := block_support_subset P.pool P.goodPool.2.1 a ha _
+    represented := by
+      let y := StageSyndromeObjective.chosen rules cs P.pool a V
+      exact ⟨(P.pool, SparseParameters.supportSize P.rank, P.rank, a, y),
+        (FiniteStageData.block_encode P.pool P.goodPool.2.1 a ha y).1,
+        (FiniteStageData.block_encode P.pool P.goodPool.2.1 a ha y).2, rfl⟩
+    finite_cost := by
+      have hf := cost_lt_of_computed_horizon old hold n rules cs
+        (StagePrefixCode.law_prefixHeader old n) P.pool P.goodPool.2.1 a ha
+        hnew hwager V hpartial
+      rw [StageSyndromeObjective.cost_eq_integral rules cs P.pool P.goodPool.2.1 a ha V
+        (StageSyndromeObjective.chosen rules cs P.pool a V) 0,
+        StagePrefixCode.law_prefixHeader old n] at hf
+      exact hf
     bounds := hbounds }⟩
   simpa only [rules, length_protectedRules] using hb
 

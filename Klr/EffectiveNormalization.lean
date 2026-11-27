@@ -1,6 +1,6 @@
 module
 
-public import Klr.ComputableRational
+public import Klr.CanonicalCapitalApproximation
 
 /-!
 # Effective rational capital with a positive reserve
@@ -86,10 +86,9 @@ structure CapitalApproximation (d : CapitalProcess) where
 
 noncomputable def CapitalApproximation.ofComputable (d : CapitalProcess)
     (hd : ComputableRealCapital d.value) : CapitalApproximation d :=
-  let q := hd.choose
-  { value := q
-    computable_value := computable_rat_of_numDen hd.choose_spec.1
-    error := hd.choose_spec.2 }
+  { value := CanonicalCapitalApproximation.value d.value hd
+    computable_value := CanonicalCapitalApproximation.computable_value d.value hd
+    error := CanonicalCapitalApproximation.error d.value hd }
 
 namespace CapitalApproximation
 

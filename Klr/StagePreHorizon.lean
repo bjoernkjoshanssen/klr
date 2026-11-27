@@ -131,9 +131,10 @@ produce actual stage candidates at every sufficiently large trial rank.
 
 The index is shorter than `r^24`, and all estimates hold for every syndrome
 chosen later. The protected family is exactly the first `n + 1` strategies. -/
-theorem exists_fixed_partitions_eventual_candidates (s : ℕ → BettingStrategy) :
-    ∃ H : ℕ → Set Cantor, (∀ i, MeasurableSet (H i)) ∧
-      ∀ (B : ℕ → AffineBlock),
+theorem eventual_candidates_of_pools (s : ℕ → BettingStrategy)
+    (H : ℕ → Set Cantor) (hH : ∀ i, MeasurableSet (H i))
+    (hpool : PoolConstruction.ComputablePools (fun i => (s i).normalize.scan) H) :
+    ∀ (B : ℕ → AffineBlock),
         Pairwise (fun i j => Disjoint (B i).support (B j).support) →
         ∀ (n z : ℕ) (ε : ℝ), 0 < ε →
           ∃ η : ℚ, 0 < η ∧
@@ -154,9 +155,6 @@ theorem exists_fixed_partitions_eventual_candidates (s : ℕ → BettingStrategy
                     (candidate hG.1 hG.2.1 hL q y)) < ε ∧
                   ∀ a ≤ n, (∑ i : Fin (n + 1), (PrefixStage.law B a).real
                     (lowDropInput (s i) (H i) (candidate hG.1 hG.2.1 hL q y))) < ε := by
-  obtain ⟨H, hH, hpool⟩ := PoolConstruction.exists_fixed_partitions_computable_pools
-    (fun i => (s i).normalize.scan)
-  refine ⟨H, hH, ?_⟩
   intro B hdis n z ε hε
   let d : ℝ := (2 : ℝ) ^ (∑ k : Fin n, (B k).rank)
   let c : ℝ := ((n + 1 : ℕ) : ℝ) * d
@@ -202,5 +200,35 @@ theorem exists_fixed_partitions_eventual_candidates (s : ℕ → BettingStrategy
   · intro y
     apply sums_lt_of_joint_score s H hH B hdis n
     exact hscore
+
+/-- The original fixed-partition existence theorem, instantiated through the
+prescribed-partition API. -/
+theorem exists_fixed_partitions_eventual_candidates (s : ℕ → BettingStrategy) :
+    ∃ H : ℕ → Set Cantor, (∀ i, MeasurableSet (H i)) ∧
+      ∀ (B : ℕ → AffineBlock),
+        Pairwise (fun i j => Disjoint (B i).support (B j).support) →
+        ∀ (n z : ℕ) (ε : ℝ), 0 < ε →
+          ∃ η : ℚ, 0 < η ∧
+            ((n + 1 : ℕ) : ℝ) * (2 : ℝ) ^ (∑ k : Fin n, (B k).rank) *
+              ((η : ℝ) + η) < ε / 2 ∧
+          ∃ τ : ℚ, 0 < τ ∧ τ < 1 / 4 ∧
+          ∃ e : Nat.Partrec.Code, ∀ᶠ r : ℕ in atTop,
+            ∃ (G : List ℕ) (L : SparseListSearch.CodeList)
+              (hG : PoolConstruction.GoodPool (fun i => (s i).normalize.scan)
+                H (n + 1) (η : ℝ) z τ (SparseParameters.blockSize r) G)
+              (hL : L ∈ SparseListConstruction.construct τ η r),
+              PoolAdvice.encodePool G ∈ e.eval (SparseParameters.blockSize r) ∧
+              ∃ q : Fin L.length, 0 < r ∧ q.val < r ^ 24 ∧
+                (∀ a ≤ n, (∑ i : Fin (n + 1),
+                  (PrefixStage.law B a).real (highMissInput (s i) (H i) G)) < ε) ∧
+                ∀ y : Fin r → ZMod 2,
+                  (∑ i : Fin (n + 1), wagerCost (PrefixStage.law B n) (s i)
+                    (candidate hG.1 hG.2.1 hL q y)) < ε ∧
+                  ∀ a ≤ n, (∑ i : Fin (n + 1), (PrefixStage.law B a).real
+                    (lowDropInput (s i) (H i) (candidate hG.1 hG.2.1 hL q y))) < ε := by
+  obtain ⟨H, hH, hpool⟩ := PoolConstruction.exists_fixed_partitions_computable_pools
+    (fun i => (s i).normalize.scan)
+  refine ⟨H, hH, ?_⟩
+  exact eventual_candidates_of_pools s H hH hpool
 
 end Klr.StagePreHorizon

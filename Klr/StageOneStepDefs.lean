@@ -5,6 +5,7 @@ public import Klr.StagePreHorizon
 public import Klr.StagePrefixCode
 public import Klr.StageSyndromeObjective
 public import Klr.AffineDescription
+public import Klr.FiniteStageData
 
 /-!
 # The result of one actual stage extension
@@ -58,6 +59,12 @@ structure Result (old : ℕ → AffineBlock) (n : ℕ) (rules : List BettingStra
   event_eq : AffineCode.event code = block.event
   budget : 2 * program.length + level + 1 ≤ r
   support_subset : block.support ⊆ G.toFinset
+  represented : ∃ d : FiniteStageData.BlockData, FiniteStageData.valid d = true ∧
+    FiniteStageData.block d = block ∧ FiniteStageData.pool d = G
+  finite_cost : (∫ X, StageHorizonChoice.objective block
+    (fun i : Fin rules.length => (rules.get i).normalize.scan)
+    (fun i : Fin rules.length => StageFiniteWager.normalizedWager (rules.get i)) horizon X
+    ∂cond (PrefixStage.law old n) block.event) < 4 * (error : ℝ)
   bounds : Bounds old n rules H error block horizon
 
 /-- The input form of the low-drop event agrees with the rank-event API. -/

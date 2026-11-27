@@ -71,14 +71,14 @@ structure Prepared (s : ℕ → BettingStrategy) (H : ℕ → Set Cantor)
 
 /-- The entire finite-stage preparation exists without an effectiveness
 assumption on the infinite sequence of stages or the enumeration of strategies. -/
-theorem exists_fixed_partitions_prepared (s : ℕ → BettingStrategy) :
-    ∃ H : ℕ → Set Cantor, (∀ i, MeasurableSet (H i)) ∧
-      ∀ (old : ℕ → AffineBlock),
+theorem prepared_of_pools (s : ℕ → BettingStrategy)
+    (H : ℕ → Set Cantor) (hH : ∀ i, MeasurableSet (H i))
+    (hpool : PoolConstruction.ComputablePools (fun i => (s i).normalize.scan) H) :
+    ∀ (old : ℕ → AffineBlock),
         Pairwise (fun i j => Disjoint (old i).support (old j).support) →
         ∀ (n z : ℕ) (error : ℚ), 0 < error →
           Nonempty (Prepared s H old n z error) := by
-  obtain ⟨H, hH, hstage⟩ := StagePreHorizon.exists_fixed_partitions_eventual_candidates s
-  refine ⟨H, hH, ?_⟩
+  have hstage := StagePreHorizon.eventual_candidates_of_pools s H hH hpool
   intro old hold n z error he
   have heR : (0 : ℝ) < error := by exact_mod_cast he
   obtain ⟨η, hη, _, τ, hτ, hτlt, poolProgram, heventually⟩ :=
@@ -110,5 +110,16 @@ theorem exists_fixed_partitions_prepared (s : ℕ → BettingStrategy) :
     program_budget := fun b hb => hbudget q.val b hq hb
     high_miss := hhigh
     scores := hscores }⟩
+
+/-- The original existence theorem, using the standard fixed partitions. -/
+theorem exists_fixed_partitions_prepared (s : ℕ → BettingStrategy) :
+    ∃ H : ℕ → Set Cantor, (∀ i, MeasurableSet (H i)) ∧
+      ∀ (old : ℕ → AffineBlock),
+        Pairwise (fun i j => Disjoint (old i).support (old j).support) →
+        ∀ (n z : ℕ) (error : ℚ), 0 < error →
+          Nonempty (Prepared s H old n z error) := by
+  obtain ⟨H, hH, hpool⟩ := PoolConstruction.exists_fixed_partitions_computable_pools
+    (fun i => (s i).normalize.scan)
+  exact ⟨H, hH, prepared_of_pools s H hH hpool⟩
 
 end Klr.StagePrepared

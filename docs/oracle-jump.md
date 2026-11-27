@@ -1,10 +1,12 @@
 # Oracle computation and finite jumps
 
 The public entry point is [`Klr.Computability`](../Klr/Computability.lean).
-It supplies proved computability foundations for the proposed effective
-refinement of the separation construction. The fourth-jump bound for a
-separating measure and the fifth-jump bound for a separating sequence remain
-future results; neither is asserted by the current separation theorem.
+It supplies the computability foundations for the completed effective
+refinement of the separation construction. The fourth-jump bound for the
+selected separating measure and the fifth-jump bound for a separating sequence
+are now unconditional theorems in
+[`EffectiveSeparation.lean`](../Klr/EffectiveSeparation.lean). The
+[degree-bounds note](effective-degree-bounds.md) explains their construction.
 
 ## Oracle model
 
@@ -156,28 +158,39 @@ the one-step relation between consecutive stages. Neither `Valid` nor the
 semantic one-step relation is assumed decidable. There is no termination
 requirement on invalid histories.
 
-This is intended for the effective affine construction: finite approximations
-can certify strict probability inequalities, while the analytic existence
-theorem proves that some certified candidate is eventually found.
+The effective affine construction now instantiates this interface: finite
+approximations certify strict probability inequalities, while the analytic
+existence theorem, applied at half the requested error, proves that some
+certified candidate is eventually found.
 
-## Remaining work for the degree bounds
+## Application to the degree bounds
 
-The remaining mathematical interfaces are:
+All five application interfaces are now proved:
 
-* A uniformly effective family of total rational simulators, together with
-  explicit normalization data and success coverage.
-* Effective fixed Borel partitions: fourth-jump computable clopen
-  approximations in measure, obtained from an effective weak-limit argument.
-* A bounded checker for strict finite-stage conditions, with its
-  fourth-jump computability proved from those approximations.
-* An explicit escape bound on block supports, giving uniformly exact rational
-  cylinder probabilities from the selected finite blocks.
-* The relative positive-closed-class selection argument that extracts a
-  fifth-jump computable separating sequence.
+* [`UniformStrategyFamily`](../Klr/UniformStrategyFamily.lean) gives one actual
+  uniformly effective family of total rational simulators covering every
+  original strategy's success set. [`UniformNormalization`](../Klr/UniformNormalization.lean)
+  computes the actual normalized wagers uniformly in the second jump.
+* [`EffectiveFixedPartitions`](../Klr/EffectiveFixedPartitions.lean) supplies
+  fourth-jump clopen approximations in measure to the same fixed Borel high
+  sets that satisfy the ordinary computable-pool contract.
+* [`EffectiveStageChecker`](../Klr/EffectiveStageChecker.lean) implements a
+  bounded fourth-jump checker for all stage conditions and proves its
+  soundness and completeness on valid finite histories.
+* [`EffectiveConstruction`](../Klr/EffectiveConstruction.lean) instantiates
+  same-oracle stage recursion. [`EffectiveBlockProduct`](../Klr/EffectiveBlockProduct.lean)
+  uses an explicit support escape bound to compute exact rational cylinder
+  masses from a finite prefix of the selected block codes.
+* [`EffectiveKLSelection`](../Klr/EffectiveKLSelection.lean) proves the relative
+  positive-closed-class selection argument for the actual KL definition. It
+  extracts a KL-random support point in one jump above the cylinder oracle.
+  Full-measure closed affine events force that point to fail the original
+  short-description Martin-Löf test.
 
-The original existential choices do not themselves establish these bounds.
-The purpose of the new search interface is to select effective witnesses
-using the existing mathematical existence proofs.
+The earlier arbitrary existential choices alone did not establish these
+bounds. The new construction makes effective selections using the existing
+mathematical existence proofs. See the [degree-bounds note](effective-degree-bounds.md)
+for the complete jump accounting and exact public theorem statements.
 
 ## Source and dependencies
 

@@ -63,11 +63,50 @@ parity-confined stage construction, and two projected ML tests. Those tests
 retain the original description programs, avoiding an additional compiler
 length assumption for the repository's interpreter.
 
+## Effective degree bounds
+
+The effective refinement is also complete. It constructs a probability measure
+concentrated on `KLR \ MLR` whose cylinder probabilities are **exact rational
+numbers uniformly computable in the fourth jump**, and proves that a separating
+sequence is Turing reducible to the fifth jump.
+
+The unconditional entry points in
+[`EffectiveSeparation.lean`](Klr/EffectiveSeparation.lean) are:
+
+* `Klr.exists_fourthJump_computable_separating_measure`
+* `Klr.exists_kolmogorovLovelandRandom_not_martinLofRandom_below_fifthJump`
+
+The latter states:
+
+```lean
+∃ X : Klr.Cantor,
+  Klr.KolmogorovLovelandRandom X ∧ ¬Klr.MartinLofRandom X ∧
+  Klr.Computability.Reduces X (Klr.Computability.OracleJump.zeroJump 5)
+```
+
+`Klr.EffectiveSeparation.measure` is the actual selected measure;
+`Klr.EffectiveSeparation.cylinderMass` is its exact rational cylinder function.
+Its fourth-jump computability, equality with the cylinder masses, and
+almost-everywhere separation are proved without construction hypotheses.
+
+The proof selects scalar query limits in the second jump using nested c.e.
+sets of positions. Two one-jump Cauchy-modulus searches give L1 names of the
+limit functions and then clopen approximations in measure to their high sets.
+The same high sets support ordinary computable pool searches. Fourth-jump
+finite certificates select the stages, while an explicit support escape bound
+makes cylinder probabilities stabilize at the cylinder's length. A proved
+one-jump positive-closed-class selector supplies the fifth-jump separator.
+
+This is a specifically selected effective version of the construction. It does
+not assert that every measure obtained by the earlier arbitrary choices is
+effective, or that membership in the high sets is decidable in the fourth jump.
+The [effective degree-bounds note](docs/effective-degree-bounds.md) explains the
+algorithms, jump count, finite search, and final selection theorem.
+
 ## Oracle computation and jump foundations
 
-[`Klr.Computability`](Klr/Computability.lean) provides the foundations for
-investigating a fourth-jump computable separating measure and a separating
-sequence computable in the fifth jump. These degree bounds are **not yet proved**.
+[`Klr.Computability`](Klr/Computability.lean) provides the foundations used by
+the effective construction and its fourth- and fifth-jump bounds.
 
 The development uses Mathlib's actual `RecursiveIn` relation. It includes an
 oracle-program interpreter and its soundness and completeness, finite oracle
@@ -82,7 +121,7 @@ existence proof on valid histories suffice to obtain a total run computable
 in the original oracle. The invariant need not itself be decidable.
 
 The [oracle and jump note](docs/oracle-jump.md) records the exact theorem
-interfaces, the extracted `tt-auto` sources, and the remaining effective
+interfaces, the extracted `tt-auto` sources, and their use in the effective
 partition and measure arguments. Mathlib remains the only external dependency.
 
 ## The completed construction

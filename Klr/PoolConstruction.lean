@@ -35,6 +35,14 @@ def GoodPool (π : ℕ → ScanRule) (H : ℕ → Set Cantor) (ℓ : ℕ) (η : 
       fairCoin.real {Z | Z ∈ (H i)ᶜ ∧
         (PoolQuery.missedCount (π i) G.toFinset Z : ℝ) < (τ : ℝ) * M} < η
 
+/-- The ordinary-program contract for a prescribed family of fixed partitions.
+The program and margin are chosen before its pool-size input. -/
+def ComputablePools (π : ℕ → ScanRule) (H : ℕ → Set Cantor) : Prop :=
+  ∀ (ℓ : ℕ) (η : ℝ), 0 < η → ∀ z : ℕ,
+    ∃ τ : ℚ, 0 < τ ∧ τ < 1 / 4 ∧
+      ∃ e : Nat.Partrec.Code, ∀ᶠ M : ℕ in atTop,
+        ∃ G : List ℕ, encodePool G ∈ e.eval M ∧ GoodPool π H ℓ η z τ M G
+
 namespace FixedParameters
 
 variable {π : ℕ → ScanRule} {a : ℕ → ℕ} {Q : Pool.QueryPartition π a}

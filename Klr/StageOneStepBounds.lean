@@ -26,6 +26,55 @@ theorem measure_le_of_real_le (μ : Measure Cantor) [IsFiniteMeasure μ]
   simpa only [Measure.real, ENNReal.ofReal_toReal (measure_ne_top μ E)] using he
 
 set_option backward.isDefEq.respectTransparency false in
+/-- The chosen syndrome has a strict bound on the exact finite rational
+objective, retaining the stronger statistic needed by effective stage search. -/
+theorem cost_lt_of_computed_horizon
+    (old : ℕ → AffineBlock)
+    (hold : Pairwise (fun i j => Disjoint (old i).support (old j).support))
+    (n : ℕ) (rules : List BettingStrategy) (cs : List AffineCode.Data)
+    (hcs : StageFiniteProbability.law cs = PrefixStage.law old n)
+    (G : List ℕ) (hG : G.Nodup) {m r : ℕ} (a : Entry)
+    (ha : GoodEntry G.length m r a)
+    (hnew : ∀ k < n, Disjoint (old k).support
+      (block G.get hG.injective_get a ha 0).support)
+    {error : ℚ}
+    (hwager : (∑ i : Fin rules.length, StageChoice.wagerCost (PrefixStage.law old n)
+      (rules.get i) (block G.get hG.injective_get a ha 0)) < (error : ℝ))
+    (V : ℕ)
+    (hpartial : StageRankLimit.partialMass (PrefixStage.law old n)
+      (block G.get hG.injective_get a ha 0)
+      (fun i : Fin rules.length => (rules.get i).normalize.scan) V < 3 * (error : ℝ)) :
+    (StageSyndromeObjective.cost rules cs G a V
+      (StageSyndromeObjective.chosen rules cs G a V) : ℝ) < 4 * (error : ℝ) := by
+  let C₀ := block G.get hG.injective_get a ha 0
+  let y := SparseSearch.wordVector r (StageSyndromeObjective.chosen rules cs G a V)
+  let π (i : Fin rules.length) := (rules.get i).normalize.scan
+  let h (i : Fin rules.length) := StageFiniteWager.normalizedWager (rules.get i)
+  have hmin : ∀ z : Fin C₀.rank → ZMod 2,
+      (∫ X, StageHorizonChoice.objective C₀ π h V X
+        ∂StageHorizonChoice.law (PrefixStage.prefixFamily old n) C₀ y) ≤
+      ∫ X, StageHorizonChoice.objective C₀ π h V X
+        ∂StageHorizonChoice.law (PrefixStage.prefixFamily old n) C₀ z := by
+    intro z
+    simpa only [C₀, π, h, y, StageHorizonChoice.law, hcs, PrefixStage.law,
+      withSyndrome_block G hG a ha 0] using
+      StageSyndromeObjective.chosen_minimizes_integral rules cs G hG a ha V z
+  have hw : (∑ i, ∫ X, StageWeights.supportWager (π i)
+      (fun v => (h i v : ℝ)) C₀.support X ∂AffineBlock.finiteStageLaw
+        (PrefixStage.prefixFamily old n)) < (error : ℝ) := by
+    simpa only [C₀, h, π, StageFiniteWager.cast_normalizedWager,
+      StageChoice.wagerCost, PrefixStage.law] using hwager
+  have hb := StageHorizonChoice.minimizing_objective_lt
+    (PrefixStage.prefixFamily old n) C₀ (PrefixStage.prefixFamily_pairwise old hold n)
+    (fun k => hnew k.val k.isLt) π h V
+    (fun i => StageFiniteWager.normalizedWager_abs_le_half (rules.get i))
+    (error : ℝ) hw hpartial y hmin
+  rw [StageSyndromeObjective.cost_eq_integral rules cs G hG a ha V
+    (StageSyndromeObjective.chosen rules cs G a V) 0]
+  simpa only [C₀, π, h, y, StageHorizonChoice.law, hcs, PrefixStage.law,
+    withSyndrome_block G hG a ha 0] using hb
+
+set_option backward.isDefEq.respectTransparency false in
 /-- A concrete computed syndrome satisfies all four stage bounds, once the
 selected candidate and the actual finite horizon have the proved score
 bounds. No syndrome is supplied as non-effective advice. -/

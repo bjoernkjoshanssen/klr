@@ -1,5 +1,6 @@
 module
 
+public import Klr.Computability
 public import Klr.MartinLof
 public import Klr.Betting
 public import Klr.ComputableNonrandom
